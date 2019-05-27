@@ -1,12 +1,11 @@
 'use strict';
 
-const mutators = require('../../lib/statement/mutators');
 const ops = require('../../lib/statement/operations');
 
-describe('mutators', function () {
+describe('operation mutators', function () {
   describe('buildBetween', function () {
     it('builds a BETWEEN predicate', function () {
-      const condition = mutators.buildBetween({
+      const condition = ops.buildBetween({
         offset: 1,
         value: [1, 100],
         params: []
@@ -22,7 +21,7 @@ describe('mutators', function () {
     it('typecasts timestamps', function () {
       const date1 = new Date();
       const date2 = new Date();
-      const condition = mutators.buildBetween({
+      const condition = ops.buildBetween({
         offset: 1,
         value: [date1, date2],
         params: []
@@ -38,7 +37,7 @@ describe('mutators', function () {
 
   describe('buildIn', function () {
     it('builds an IN list', function () {
-      const condition = mutators.buildIn({
+      const condition = ops.buildIn({
         appended: ops('='),
         offset: 1,
         value: [1, 2, 3],
@@ -52,7 +51,7 @@ describe('mutators', function () {
     });
 
     it('builds a NOT IN list', function () {
-      const condition = mutators.buildIn({
+      const condition = ops.buildIn({
         appended: ops('<>'),
         offset: 1,
         value: [1, 2, 3],
@@ -68,7 +67,7 @@ describe('mutators', function () {
     it('typecasts timestamps', function () {
       const date1 = new Date();
       const date2 = new Date();
-      const condition = mutators.buildIn({
+      const condition = ops.buildIn({
         appended: ops('='),
         offset: 1,
         value: [date1, date2],
@@ -84,7 +83,7 @@ describe('mutators', function () {
 
   describe('buildIs', function () {
     it('interpolates values with IS', function () {
-      const condition = mutators.buildIs({
+      const condition = ops.buildIs({
         appended: ops('='),
         offset: 1,
         value: null,
@@ -98,7 +97,7 @@ describe('mutators', function () {
     });
 
     it('interpolates values with IS NOT', function () {
-      const condition = mutators.buildIs({
+      const condition = ops.buildIs({
         appended: ops('is not'),
         offset: 1,
         value: true,
@@ -114,7 +113,7 @@ describe('mutators', function () {
 
   describe('equality', function () {
     it('passes off arrays to buildIn', function () {
-      const condition = mutators.equality({
+      const condition = ops.equality({
         appended: ops('<>'),
         offset: 1,
         value: [1, 2, 3],
@@ -128,21 +127,21 @@ describe('mutators', function () {
     });
 
     it('passes nulls and booleans to buildIs', function () {
-      assert.equal(mutators.equality({
+      assert.equal(ops.equality({
         appended: ops('is'),
         offset: 1,
         value: null,
         params: []
       }).appended.operator, 'IS');
 
-      assert.equal(mutators.equality({
+      assert.equal(ops.equality({
         appended: ops('='),
         offset: 1,
         value: true,
         params: []
       }).appended.operator, 'IS');
 
-      assert.equal(mutators.equality({
+      assert.equal(ops.equality({
         appended: ops('='),
         offset: 1,
         value: false,
@@ -151,7 +150,7 @@ describe('mutators', function () {
     });
 
     it('prepares parameters', function () {
-      const condition = mutators.equality({
+      const condition = ops.equality({
         appended: ops('='),
         offset: 1,
         value: 123,
@@ -166,7 +165,7 @@ describe('mutators', function () {
 
     it('typecasts timestamps', function () {
       const date1 = new Date();
-      const condition = mutators.equality({
+      const condition = ops.equality({
         appended: ops('='),
         offset: 1,
         value: date1,
@@ -188,7 +187,7 @@ describe('mutators', function () {
         params: []
       };
 
-      assert.deepEqual(mutators.literalizeArray(condition), {
+      assert.deepEqual(ops.literalizeArray(condition), {
         offset: 1,
         params: ['{one,two,three}'],
         value: '$1'
@@ -202,7 +201,7 @@ describe('mutators', function () {
         params: []
       };
 
-      assert.deepEqual(mutators.literalizeArray(condition), {
+      assert.deepEqual(ops.literalizeArray(condition), {
         offset: 1,
         params: ['hi'],
         value: '$1'
@@ -216,7 +215,7 @@ describe('mutators', function () {
         params: []
       };
 
-      assert.deepEqual(mutators.literalizeArray(condition), {
+      assert.deepEqual(ops.literalizeArray(condition), {
         offset: 1,
         params: ['{"{one}","two three","four,five","\\"six\\"","\\\\seven","","null"}'],
         value: '$1'
@@ -230,7 +229,7 @@ describe('mutators', function () {
         params: []
       };
 
-      assert.deepEqual(mutators.literalizeArray(condition), {
+      assert.deepEqual(ops.literalizeArray(condition), {
         offset: 1,
         params: ['{1,true,null,1.5}'],
         value: '$1'
@@ -245,7 +244,7 @@ describe('mutators', function () {
         params: []
       };
 
-      assert.deepEqual(mutators.literalizeArray(condition), {
+      assert.deepEqual(ops.literalizeArray(condition), {
         offset: 1,
         params: [date1],
         value: '$1::timestamptz'

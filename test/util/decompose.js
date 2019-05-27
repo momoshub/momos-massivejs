@@ -61,6 +61,28 @@ describe('decompose', function () {
     assert.deepEqual(data, [{id: 1, val: 'p1', children: [{id: 11, val: 'c1'}]}]);
   });
 
+  it('should handle array fields', function () {
+    const data = decompose({
+      pk: 'parent_id',
+      columns: {parent_id: 'id', parent_arr: 'arr'},
+      children: {
+        pk: 'children_id',
+        columns: {children_id: 'id', children_arr: 'arr'},
+        array: true // force an array even though this can only ever be a flat row
+      }
+    }, {
+      parent_id: 1,
+      parent_arr: ['one', 'two'],
+      children_id: 11,
+      children_arr: ['three', 'four']
+    });
+
+    assert.deepEqual(data, [{
+      id: 1,
+      arr: ['one', 'two'],
+      children: [{id: 11, arr: ['three', 'four']}]}]);
+  });
+
   it('can use arrays of column names if no mapping is needed', function () {
     const data = decompose({
       pk: 'parent_id',

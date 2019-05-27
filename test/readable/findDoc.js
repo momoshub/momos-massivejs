@@ -106,8 +106,14 @@ describe('findDoc', function () {
       });
     });
 
-    it('executes a contains if passed an array of objects', function () {
+    it('executes a contains if passed an array of element-matching criteria', function () {
       return db.docs.findDoc({studios: [{name: 'Warner'}]}).then(docs => {
+        assert.lengthOf(docs, 1);
+      });
+    });
+
+    it('executes a contains if passed an array of multiple element-matching criteria for some reason', function () {
+      return db.docs.findDoc({studios: [{name: 'Warner'}, {name: 'Universal'}]}).then(docs => {
         assert.lengthOf(docs, 1);
       });
     });
@@ -152,7 +158,7 @@ describe('findDoc', function () {
       });
     });
 
-    it('returns null when a single document is\'nt found', function () {
+    it('returns null when a single document isn\'t found', function () {
       return db.docs.findDoc({title: 'Not Found'}, {single: true}).then(doc => {
         assert.equal(doc, null);
       });

@@ -24,6 +24,7 @@ describe('detaching entities', function () {
     db.attach(new Writable({
       schema: 'public',
       name: 'mytable',
+      columns: ['val'],
       db
     }));
 
@@ -43,6 +44,7 @@ describe('detaching entities', function () {
     db.attach(new Writable({
       schema: 'public',
       name: 'table_or_script',
+      columns: ['val'],
       db
     }));
 

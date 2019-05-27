@@ -1,14 +1,18 @@
 'use strict';
 
+const Writable = require('../../lib/writable');
 const Insert = require('../../lib/statement/insert');
 
 describe('Insert', function () {
-  const source = {
-    delimitedFullName: '"testsource"',
+  const source = new Writable({
+    name: 'testsource',
+    schema: 'public',
+    columns: ['id', 'field1', 'field2', 'string', 'boolean', 'int', 'number', 'object', 'array', 'emptyArray'],
     pk: ['id'],
-    isPkSearch: () => false,
-    columns: ['field1', 'field2', 'string', 'boolean', 'int', 'number', 'object', 'array', 'emptyArray']
-  };
+    db: {
+      currentSchema: 'public'
+    }
+  });
 
   describe('ctor', function () {
     it('should have defaults', function () {

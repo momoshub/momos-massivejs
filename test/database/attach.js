@@ -23,6 +23,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'newschema',
         name: 't1',
+        columns: ['val'],
         db
       }));
 
@@ -42,12 +43,14 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'schema_or_table',
         name: 't1',
+        columns: ['val'],
         db
       }));
 
       db.attach(new Writable({
         schema: 'public',
         name: 'schema_or_table',
+        columns: ['val'],
         db
       }));
 
@@ -62,6 +65,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'schema_or_function',
         name: 't1',
+        columns: ['val'],
         db
       }));
 
@@ -87,6 +91,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'three_things',
         name: 't1',
+        columns: ['val'],
         db
       }));
 
@@ -101,6 +106,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'public',
         name: 'three_things',
+        columns: ['val'],
         db
       }));
 
@@ -129,6 +135,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'public',
         name: 'folder_or_table',
+        columns: ['val'],
         db
       }));
 
@@ -156,6 +163,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'public',
         name: 'folder_or_table',
+        columns: ['val'],
         db
       }));
 
@@ -183,6 +191,7 @@ describe('attaching entities', function () {
         db.attach(new Writable({
           schema: 'public',
           name: 'folder_or_table',
+          columns: ['val'],
           db
         }));
       });
@@ -227,6 +236,7 @@ describe('attaching entities', function () {
       db.attach(new Writable({
         schema: 'public',
         name: 'function_or_table',
+        columns: ['val'],
         db
       }));
 

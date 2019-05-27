@@ -21,7 +21,10 @@ global.resetDb = function (schema = 'default') {
   return massive(global.connectionString, global.loader).then(db => {
     return db.query(`select schema_name from information_schema.schemata where catalog_name = 'massive' and schema_name not like 'pg_%' and schema_name not like 'information_schema'`)
       .then(schemata =>
-        Promise.all(schemata.map(s => db.query(`drop schema ${s.schema_name} cascade`)))
+        // drop schemas one by one to avoid deadlocks in case of cross-schema dependencies
+        schemata.reduce((promise, s) =>
+          promise.then(() => db.query(`drop schema ${s.schema_name} cascade`)), Promise.resolve()
+        )
       )
       .then(() => db.schema())
       .then(() => db.reload());

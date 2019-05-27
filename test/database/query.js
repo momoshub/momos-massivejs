@@ -94,29 +94,29 @@ describe('query', function () {
 
   it('runs a query object', function () {
     const query = new Select(
-      {delimitedFullName: `(values ('hi'), ('ih')) temp`, isPkSearch: () => false},
-      {column1: 'hi'},
-      {fields: ['column1']}
+      db.products,
+      {id: 1},
+      {fields: ['id']}
     );
 
     return db.query(query).then(result => {
       assert.lengthOf(result, 1);
-      assert.equal(result[0].column1, 'hi');
+      assert.equal(result[0].id, 1);
     });
   });
 
   it('builds a query without executing', function () {
     const query = new Select(
-      {delimitedFullName: `(values ('hi'), ('ih')) temp`, isPkSearch: () => false},
-      {column1: 'hi'},
-      {fields: ['column1'], build: true}
+      db.products,
+      {id: 1},
+      {fields: ['id'], build: true}
     );
 
     return db.query(query).then(result => {
       assert.isObject(result);
       assert.deepEqual(result, {
-        sql: `SELECT "column1" FROM (values ('hi'), ('ih')) temp WHERE "column1" = $1 ORDER BY 1`,
-        params: ['hi']
+        sql: `SELECT "id" FROM "products" WHERE "id" = $1 ORDER BY "id"`,
+        params: [1]
       });
     });
   });
