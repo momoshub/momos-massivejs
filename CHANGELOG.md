@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.11.1](https://gitlab.com/dmfay/massive-js/compare/v5.11.0...v5.11.1) (2019-07-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency lodash to v4.17.14 ([9c8c0e8](https://gitlab.com/dmfay/massive-js/commit/9c8c0e8))
+* **deps:** update dependency pg-promise to v8.7.3 ([6699525](https://gitlab.com/dmfay/massive-js/commit/6699525))
+* **deps:** update dependency pg-promise to v8.7.4 ([3d829ea](https://gitlab.com/dmfay/massive-js/commit/3d829ea))
+
+
+
 ## [5.11.0](https://gitlab.com/dmfay/massive-js/compare/v5.10.0...v5.11.0) (2019-06-03)
 
 
