@@ -67,7 +67,7 @@ describe('orderBy', function () {
     assert.equal(orderBy([
       {field: 'col1', direction: 'asc', type: 'int'},
       {field: 'col2'}
-    ], true), `ORDER BY (body->>'col1')::int ASC,body->>'col2' ASC`);
+    ], true), `ORDER BY (body->>'col1')::int ASC,body->'col2' ASC`);
   });
 
   it('should ignore useBody with exprs', function () {
@@ -81,6 +81,6 @@ describe('orderBy', function () {
       {field: 'jsonobj.element', direction: 'asc'},
       {field: 'jsonarray[1]', direction: 'desc'},
       {field: 'complex.element[0].with.nested.properties', direction: 'asc'}
-    ]), `ORDER BY "jsonobj"->>'element' ASC,"jsonarray"->>1 DESC,"complex"#>>'{element,0,with,nested,properties}' ASC`);
+    ]), `ORDER BY "jsonobj"->'element' ASC,"jsonarray"->1 DESC,"complex"#>'{element,0,with,nested,properties}' ASC`);
   });
 });

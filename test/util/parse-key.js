@@ -74,6 +74,34 @@ describe('parseKey', function () {
       assert.equal(result.field, '"json"#>>\'{array,1,field,array,2}\'');
       assert.deepEqual(result.elements, ['array', '1', 'field', 'array', '2']);
     });
+
+    it('should format a shallow JSON path with as-text off', function () {
+      const result = parseKey('json.property', () => {}, false);
+      assert.equal(result.rawField, 'json');
+      assert.equal(result.field, '"json"->\'property\'');
+      assert.deepEqual(result.elements, ['property']);
+    });
+
+    it('should format a JSON array path with as-text off', function () {
+      const result = parseKey('json[123]', () => {}, false);
+      assert.equal(result.rawField, 'json');
+      assert.equal(result.field, '"json"->123');
+      assert.deepEqual(result.elements, ['123']);
+    });
+
+    it('should format a deep JSON path with as-text off', function () {
+      const result = parseKey('json.outer.inner', () => {}, false);
+      assert.equal(result.rawField, 'json');
+      assert.equal(result.field, '"json"#>\'{outer,inner}\'');
+      assert.deepEqual(result.elements, ['outer', 'inner']);
+    });
+
+    it('should force as-text on if JSON has cast', function () {
+      const result = parseKey('json.property::int', () => {}, false);
+      assert.equal(result.rawField, 'json');
+      assert.equal(result.field, '("json"->>\'property\')::int');
+      assert.deepEqual(result.elements, ['property']);
+    });
   });
 
   describe('operation appendices', function () {
