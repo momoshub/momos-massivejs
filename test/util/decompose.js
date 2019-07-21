@@ -27,7 +27,7 @@ describe('decompose', function () {
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c1'},
       {parent_id: null, parent_val: null, children_id: null, children_val: null}
-    ]));
+    ]), 'Attempted to decompose a row where the root object has a null PK. This can happen if tables in your SELECT list share column names. Ensure that all columns are aliased uniquely and update your decomposition schema if necessary.');
   });
 
   it('should collapse simple tree structures', function () {
@@ -445,8 +445,8 @@ describe('decompose', function () {
     }]);
   });
 
-  it.skip('should accept and use pk arrays', function () {
-    const data = decompose({
+  it('should throw if a row is encountered where all pk fields are null', function () {
+    assert.throws(() => decompose({
       pk: ['parent_id_one', 'parent_id_two'],
       columns: {parent_id_one: 'id_one', parent_id_two: 'id_two', parent_val: 'val'},
       children1: {
@@ -459,49 +459,74 @@ describe('decompose', function () {
           array: true
         }
       }
-    }, [
-      {
-        parent_id_one: 1,
-        parent_id_two: 2,
-        parent_val: 'p1',
-        children1_id_one: 11,
-        children1_id_two: 12,
-        children1_val: 'c1',
-        children1_children2_id_one: 21,
-        children1_children2_id_two: 22,
-        children1_children2_val: 'd1'
-      }, {
-        parent_id_one: 1,
-        parent_id_two: 2,
-        parent_val: 'p1',
-        children1_id_one: 13,
-        children1_id_two: 14,
-        children1_val: 'c2',
-        children1_children2_id_one: 23,
-        children1_children2_id_two: 24,
-        children1_children2_val: 'd2'
-      }, {
-        parent_id_one: 1,
-        parent_id_two: 2,
-        parent_val: 'p1',
-        children1_id_one: 13,
-        children1_id_two: 14,
-        children1_val: 'c2',
-        children1_children2_id_one: 25,
-        children1_children2_id_two: 26,
-        children1_children2_val: 'd3'
-      }, {
-        parent_id_one: 3,
-        parent_id_two: 4,
-        parent_val: 'p2',
-        children1_id_one: 15,
-        children1_id_two: 16,
-        children1_val: 'c3',
-        children1_children2_id_one: 27,
-        children1_children2_id_two: 28,
-        children1_children2_val: 'd4'
+    }, [{
+      parent_id_one: null,
+      parent_id_two: null,
+      parent_val: 'p1',
+      children1_id_one: 11,
+      children1_id_two: 12,
+      children1_val: 'c1',
+      children1_children2_id_one: 21,
+      children1_children2_id_two: 22,
+      children1_children2_val: 'd1'
+    }]), 'Attempted to decompose a row where the root object has a null PK. This can happen if tables in your SELECT list share column names. Ensure that all columns are aliased uniquely and update your decomposition schema if necessary.');
+  });
+
+  it('should accept and use pk arrays', function () {
+    const data = decompose({
+      pk: ['parent_id_one', 'parent_id_two'],
+      columns: {parent_id_one: 'id_one', parent_id_two: 'id_two', parent_val: 'val'},
+      children1: {
+        pk: ['children1_id_one', 'children1_id_two'],
+        columns: {children1_id_one: 'id_one', children1_id_two: 'id_two', children1_val: 'val'},
+        array: true,
+        children2: {
+          pk: ['children1_children2_id_one', 'children1_children2_id_two'],
+          columns: {children1_children2_id_one: 'id_one', children1_children2_id_two: 'id_two', children1_children2_val: 'val'},
+          array: true
+        }
       }
-    ]);
+    }, [{
+      parent_id_one: 1,
+      parent_id_two: 2,
+      parent_val: 'p1',
+      children1_id_one: 11,
+      children1_id_two: 12,
+      children1_val: 'c1',
+      children1_children2_id_one: 21,
+      children1_children2_id_two: 22,
+      children1_children2_val: 'd1'
+    }, {
+      parent_id_one: 1,
+      parent_id_two: 2,
+      parent_val: 'p1',
+      children1_id_one: 13,
+      children1_id_two: 14,
+      children1_val: 'c2',
+      children1_children2_id_one: 23,
+      children1_children2_id_two: 24,
+      children1_children2_val: 'd2'
+    }, {
+      parent_id_one: 1,
+      parent_id_two: 2,
+      parent_val: 'p1',
+      children1_id_one: 13,
+      children1_id_two: 14,
+      children1_val: 'c2',
+      children1_children2_id_one: 25,
+      children1_children2_id_two: 26,
+      children1_children2_val: 'd3'
+    }, {
+      parent_id_one: 3,
+      parent_id_two: 4,
+      parent_val: 'p2',
+      children1_id_one: 15,
+      children1_id_two: 16,
+      children1_val: 'c3',
+      children1_children2_id_one: 27,
+      children1_children2_id_two: 28,
+      children1_children2_val: 'd4'
+    }]);
 
     assert.deepEqual(data, [{
       id_one: 1,
@@ -529,7 +554,7 @@ describe('decompose', function () {
         id_one: 15,
         id_two: 16,
         val: 'c3',
-        children2: [{id_one: 26, id_two: 28, val: 'd4'}]
+        children2: [{id_one: 27, id_two: 28, val: 'd4'}]
       }]
     }]);
   });
