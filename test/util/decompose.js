@@ -304,6 +304,68 @@ describe('decompose', function () {
     assert.deepEqual(data, [{id: 1, val: 'p1', child: {id: 11, val: 'c1'}}]);
   });
 
+  it('decomposes to dictionaries', function () {
+    const data = decompose({
+      pk: 'parent_id',
+      columns: {parent_id: 'id', parent_val: 'val'},
+      child: {
+        pk: 'child_id',
+        decomposeTo: 'dictionary',
+        columns: {child_id: 'id', child_val: 'val'},
+        grandchildren: {
+          pk: 'grandchild_id',
+          columns: {grandchild_id: 'id', grandchild_val: 'val'},
+          decomposeTo: 'dictionary'
+        }
+      }
+    }, [
+      {parent_id: 1, parent_val: 'p1', child_id: 11, child_val: 'c1', grandchild_id: 111, grandchild_val: 'g1'},
+      {parent_id: 1, parent_val: 'p1', child_id: 11, child_val: 'c1', grandchild_id: 112, grandchild_val: 'g2'}
+    ]);
+
+    assert.deepEqual(data, [{
+      id: 1, val: 'p1', child: {
+        11: {
+          id: 11, val: 'c1', grandchildren: {
+            111: {id: 111, val: 'g1'},
+            112: {id: 112, val: 'g2'}
+          }
+        }
+      }
+    }]);
+  });
+
+  it('decomposes to dictionaries with array column lists', function () {
+    const data = decompose({
+      pk: 'parent_id',
+      columns: {parent_id: 'id', parent_val: 'val'},
+      child: {
+        pk: 'child_id',
+        decomposeTo: 'dictionary',
+        columns: ['child_id', 'child_val'],
+        grandchildren: {
+          pk: 'grandchild_id',
+          columns: {grandchild_id: 'id', grandchild_val: 'val'},
+          decomposeTo: 'dictionary'
+        }
+      }
+    }, [
+      {parent_id: 1, parent_val: 'p1', child_id: 11, child_val: 'c1', grandchild_id: 111, grandchild_val: 'g1'},
+      {parent_id: 1, parent_val: 'p1', child_id: 11, child_val: 'c1', grandchild_id: 112, grandchild_val: 'g2'}
+    ]);
+
+    assert.deepEqual(data, [{
+      id: 1, val: 'p1', child: {
+        11: {
+          child_id: 11, child_val: 'c1', grandchildren: {
+            111: {id: 111, val: 'g1'},
+            112: {id: 112, val: 'g2'}
+          }
+        }
+      }
+    }]);
+  });
+
   it('consolidates duplicate children by pk', function () {
     // this dataset is 'bad' in that you're not usually going to see 100% duplicate rows unless you've really screwed up
     // but it's more legible than reproducing the 'multiple children' data and tests the deduplication just the same
