@@ -14,4 +14,5 @@ test:
   script:
     - npm i
     - npm test
-    - npm run coverage
+    - echo "$CI_PROJECT_NAMESPACE"
+    - if [ "$CI_PROJECT_NAMESPACE" = "dmfay" ]; then npm run coverage; fi
