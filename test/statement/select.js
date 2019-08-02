@@ -47,7 +47,7 @@ describe('Select', function () {
       assert.equal(query.fields, '*');
       assert.equal(query.generator, 'tableGenerator');
       assert.isFalse(query.single);
-      assert.equal(query.order, 'ORDER BY "id"');
+      assert.isUndefined(query.order);
     });
 
     it('applies options', function () {
@@ -74,7 +74,7 @@ describe('Select', function () {
   describe('format', function () {
     it('should return a basic select', function () {
       const result = new Select(source);
-      assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id"');
+      assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
     });
 
     it('orders by position if no pk is present', function () {
@@ -112,23 +112,23 @@ describe('Select', function () {
       });
 
       const result = new Select(readable);
-      assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY 1');
+      assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
     });
 
     it('should add an ONLY', function () {
       const result = new Select(source, {}, {only: true});
-      assert.equal(result.format(), 'SELECT * FROM ONLY "mytable" WHERE TRUE ORDER BY "id"');
+      assert.equal(result.format(), 'SELECT * FROM ONLY "mytable" WHERE TRUE');
     });
 
     describe('fields', function () {
       it('should interpolate fields', function () {
         const result = new Select(source, {}, {fields: ['col1']});
-        assert.equal(result.format(), 'SELECT "col1" FROM "mytable" WHERE TRUE ORDER BY "id"');
+        assert.equal(result.format(), 'SELECT "col1" FROM "mytable" WHERE TRUE');
       });
 
       it('should join arrays', function () {
         const result = new Select(source, {}, {fields: ['col1', 'col2']});
-        assert.equal(result.format(), 'SELECT "col1","col2" FROM "mytable" WHERE TRUE ORDER BY "id"');
+        assert.equal(result.format(), 'SELECT "col1","col2" FROM "mytable" WHERE TRUE');
       });
 
       it('should parse JSON fields', function () {
@@ -140,7 +140,7 @@ describe('Select', function () {
           ]
         });
 
-        assert.equal(result.format(), `SELECT "field"->>'element',"field"#>>'{array,0}',"field"#>>'{array,1,nested,2,element}' FROM "mytable" WHERE TRUE ORDER BY "id"`);
+        assert.equal(result.format(), `SELECT "field"->>'element',"field"#>>'{array,0}',"field"#>>'{array,1,nested,2,element}' FROM "mytable" WHERE TRUE`);
       });
 
       it('should alias fields in document mode', function () {
@@ -149,7 +149,7 @@ describe('Select', function () {
           document: true
         });
 
-        assert.equal(result.format(), `SELECT "body"->>'one' AS "one","body"->>'two' AS "two",id FROM "mytable" WHERE TRUE ORDER BY "id"`);
+        assert.equal(result.format(), `SELECT "body"->>'one' AS "one","body"->>'two' AS "two",id FROM "mytable" WHERE TRUE`);
       });
 
       it('should add expressions', function () {
@@ -160,7 +160,7 @@ describe('Select', function () {
           }
         });
 
-        assert.equal(result.format(), 'SELECT col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE ORDER BY "id"');
+        assert.equal(result.format(), 'SELECT col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE');
       });
 
       it('should add fields and expressions', function () {
@@ -172,46 +172,46 @@ describe('Select', function () {
           }
         });
 
-        assert.equal(result.format(), 'SELECT "col1","col2",col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE ORDER BY "id"');
+        assert.equal(result.format(), 'SELECT "col1","col2",col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE');
       });
     });
 
     describe('for update/for share', function () {
       it('adds FOR UPDATE', function () {
         const result = new Select(source, {}, {forUpdate: true});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" FOR UPDATE');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR UPDATE');
       });
 
       it('adds FOR SHARE', function () {
         const result = new Select(source, {}, {forShare: true});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" FOR SHARE');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR SHARE');
       });
 
       it('applies limits with a FOR', function () {
         const result = new Select(source, {}, {forUpdate: true, limit: 1});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" FOR UPDATE LIMIT 1');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR UPDATE LIMIT 1');
       });
     });
 
     describe('offset and limit', function () {
       it('should add an offset', function () {
         const result = new Select(source, {}, {offset: 10});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" OFFSET 10');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE OFFSET 10');
       });
 
       it('should limit single queries to one result', function () {
         const result = new Select(source, {}, {single: true});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" LIMIT 1');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE LIMIT 1');
       });
 
       it('should add a limit', function () {
         const result = new Select(source, {}, {limit: 10});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" LIMIT 10');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE LIMIT 10');
       });
 
       it('should add both offset and limit', function () {
         const result = new Select(source, {}, {offset: 10, limit: 10});
-        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "id" OFFSET 10 LIMIT 10');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE OFFSET 10 LIMIT 10');
       });
     });
 
@@ -319,7 +319,7 @@ describe('Select', function () {
         try {
           result.format();
         } catch (err) {
-          assert.equal(err.message, 'Keyset paging with pageLength requires options.order');
+          assert.equal(err.message, 'Keyset paging with pageLength requires an explicit order directive');
 
           done();
         }
@@ -400,7 +400,7 @@ describe('Select', function () {
         'INNER JOIN "jointable1" ON ("jointable1"."mytable_id" = "mytable"."id") ',
         'INNER JOIN "jointable2" AS "jt2" ON ("jt2"."jointable1_id" = "jointable1"."id") ',
         'LEFT OUTER JOIN "myschema"."jointable3" AS "jointable3" ON ("jointable3"."mytable_id" = "mytable"."id") ',
-        'WHERE TRUE ORDER BY "mytable"."id"'
+        'WHERE TRUE'
       ].join(''));
     });
   });

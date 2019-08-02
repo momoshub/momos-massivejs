@@ -512,24 +512,30 @@ describe('find', function () {
     it('returns all records on find with no args', function () {
       return db.popular_products.find().then(res => assert.lengthOf(res, 3));
     });
-    it('returns first record with findOne no args', function () {
-      return db.popular_products.findOne().then(res => assert.equal(res.id, 1));
+
+    it('returns one record with findOne no args', function () {
+      return db.popular_products.findOne().then(res => assert.isAbove(res.id, 0));
     });
+
     it('handles multiple predicates', function () {
       return db.popular_products.where('price=$1 OR price=$2', [12.00, 24.00]).then(res => assert.lengthOf(res, 2));
     });
+
     it('counts rows with where-style args', function () {
       return db.popular_products.count('price=$1 OR price=$2', [12.00, 24.00]).then(res => assert.equal(res, 2));
     });
+
     it('counts rows with find-style args', function () {
       return db.popular_products.count({price: [12.00, 24.00]}).then(res => assert.equal(res, 2));
     });
+
     it('makes comparisons', function () {
       return db.popular_products.find({'price > ': 30.00}).then(res => {
         assert.lengthOf(res, 1);
         assert.equal(res[0].id, 4);
       });
     });
+
     it('rejects if you try to search by pk', function () {
       return db.popular_products.find(1).then(() => { assert.fail(); }).catch(() => {});
     });
@@ -552,8 +558,8 @@ describe('find', function () {
 
     it('allows expressions in the select list', function () {
       return db.popular_products.find({}, {fields: ['id'], exprs: {name: 'upper(name)'}}).then(res => {
-        assert.equal(res[0].id, 1);
-        assert.equal(res[0].name, 'PRODUCT 1');
+        assert.isAbove(res[0].id, 0);
+        assert.equal(res[0].name, `PRODUCT ${res[0].id}`);
       });
     });
 

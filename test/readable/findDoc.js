@@ -242,7 +242,7 @@ describe('findDoc', function () {
     it('applies options', function () {
       return db.docs.findDoc({title: 'Document 1'}, {build: true}).then(query => {
         assert.deepEqual(query, {
-          sql: 'SELECT * FROM "docs" WHERE "body" @> $1 ORDER BY "id"',
+          sql: 'SELECT * FROM "docs" WHERE "body" @> $1',
           params: ['{"title":"Document 1"}']
         });
       });

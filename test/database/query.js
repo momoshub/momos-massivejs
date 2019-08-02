@@ -115,7 +115,7 @@ describe('query', function () {
     return db.query(query).then(result => {
       assert.isObject(result);
       assert.deepEqual(result, {
-        sql: `SELECT "id" FROM "products" WHERE "id" = $1 ORDER BY "id"`,
+        sql: `SELECT "id" FROM "products" WHERE "id" = $1`,
         params: [1]
       });
     });

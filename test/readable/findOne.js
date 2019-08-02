@@ -47,7 +47,7 @@ describe('findOne', function () {
   describe('options', function () {
     it('applies options', function () {
       return db.products.findOne(1, {build: true}).then(res => {
-        assert.equal(res.sql, 'SELECT * FROM "products" WHERE "id" = $1 ORDER BY "id" LIMIT 1');
+        assert.equal(res.sql, 'SELECT * FROM "products" WHERE "id" = $1 LIMIT 1');
         assert.deepEqual(res.params, [1]);
       });
     });

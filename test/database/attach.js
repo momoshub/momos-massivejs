@@ -248,7 +248,7 @@ describe('attaching entities', function () {
 
       assert.equal(result1[0].val, 1);
       assert.deepEqual(result2, {
-        sql: 'SELECT * FROM "function_or_table" WHERE TRUE ORDER BY 1',
+        sql: 'SELECT * FROM "function_or_table" WHERE TRUE',
         params: []
       });
     });

@@ -25,6 +25,7 @@ describe('decomposing results', function () {
 
   it('applies a schema to decompose results', function* () {
     const issues = yield db.everything.find({}, {
+      order: [{field: 'user_id'}],
       decompose: {
         pk: 'user_id',
         columns: {

@@ -471,8 +471,7 @@ describe('join', function () {
         '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
         'FROM "alpha" ',
         'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
-        'WHERE "alpha"."id" = $1 ',
-        'ORDER BY "alpha"."id"'
+        'WHERE "alpha"."id" = $1'
       ].join(''));
       assert.deepEqual(result.params, [3]);
     });
