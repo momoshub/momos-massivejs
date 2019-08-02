@@ -105,7 +105,6 @@ describe('WHERE clause generation', function () {
       assert.equal(result.params[0], '{"field":[{"one":"two","three":"four"}]}');
     });
 
-    // TODO https://gitlab.com/dmfay/massive-js/issues/683
     describe('JSON value formatting', function () {
       it('should stringify numbers', function () {
         const result = where(source, {'json.field': 123});
