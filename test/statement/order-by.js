@@ -38,6 +38,13 @@ describe('orderBy', function () {
     ], source), `ORDER BY ("col1")::int ASC,(col1 + col2)::text ASC`);
   });
 
+  it('should apply implicit cast types', function () {
+    assert.equal(orderBy([
+      {field: 'col1::int'},
+      {expr: '(col1 + col2)::text'}
+    ], source), `ORDER BY "col1"::int ASC,(col1 + col2)::text ASC`);
+  });
+
   it('should apply directions', function () {
     assert.equal(orderBy([
       {field: 'col1', direction: 'desc'},
