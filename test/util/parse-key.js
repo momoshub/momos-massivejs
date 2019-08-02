@@ -216,6 +216,22 @@ describe('parseKey', function () {
       assert.equal(result.lhs, '"jt2alias"."myfield"');
     });
 
+    it('should quote an unquoted field identifier for a table', function () {
+      const relationSource = source.join({
+        'jt': {
+          type: 'inner',
+          relation: 'jointable1',
+          on: {mytable_id: 'id'}
+        }
+      });
+
+      const result = parseKey('jointable1.myfield', relationSource, ops);
+      assert.equal(result.relation, 'jointable1');
+      assert.equal(result.field, 'myfield');
+      assert.equal(result.path, '"jt"."myfield"');
+      assert.equal(result.lhs, '"jt"."myfield"');
+    });
+
     it('should default to the origin for a join source if no schema/table is specified', function () {
       const result = parseKey('myfield', joinSource, ops);
       assert.equal(result.schema, 'public');
@@ -226,11 +242,19 @@ describe('parseKey', function () {
     });
 
     it('should not double-quote a quoted field identifier for a table', function () {
-      const result = parseKey('"jointable1"."my field"', joinSource, ops);
+      const relationSource = source.join({
+        'jt': {
+          type: 'inner',
+          relation: 'jointable1',
+          on: {mytable_id: 'id'}
+        }
+      });
+
+      const result = parseKey('"jointable1"."my field"', relationSource, ops);
       assert.equal(result.relation, 'jointable1');
       assert.equal(result.field, 'my field');
-      assert.equal(result.path, '"jointable1"."my field"');
-      assert.equal(result.lhs, '"jointable1"."my field"');
+      assert.equal(result.path, '"jt"."my field"');
+      assert.equal(result.lhs, '"jt"."my field"');
     });
 
     it('should alias a quoted field identifier for a table and schema', function () {
