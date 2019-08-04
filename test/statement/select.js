@@ -44,10 +44,21 @@ describe('Select', function () {
     it('has defaults', function () {
       const query = new Select(source);
 
-      assert.equal(query.fields, '*');
-      assert.equal(query.generator, 'tableGenerator');
+      assert.isFalse(query.only);
+      assert.deepEqual(query.selectList, ['*']);
+      assert.equal(query.conditions, 'TRUE');
+      assert.lengthOf(query.order, 0);
+      assert.isUndefined(query.offset);
+      assert.isUndefined(query.limit);
+      assert.isUndefined(query.pageLength);
+      assert.isUndefined(query.forUpdate);
+      assert.isUndefined(query.forShare);
+      assert.lengthOf(query.params, 0);
+      assert.isUndefined(query.build);
+      assert.isUndefined(query.document);
+      assert.isUndefined(query.decompose);
       assert.isFalse(query.single);
-      assert.isUndefined(query.order);
+      assert.isFalse(query.stream);
     });
 
     it('applies options', function () {
@@ -59,15 +70,215 @@ describe('Select', function () {
     it('generates a WHERE with a defined table', function () {
       const query = new Select(source, {field: 'val'});
 
-      assert.equal(query.where.conditions, '"field" = $1');
-      assert.deepEqual(query.where.params, ['val']);
+      assert.equal(query.conditions, '"field" = $1');
+      assert.deepEqual(query.params, ['val']);
     });
 
     it('generates a WHERE with an implicit table', function () {
       const query = new Select(source, {field: 'val'});
 
-      assert.equal(query.where.conditions, '"field" = $1');
-      assert.deepEqual(query.where.params, ['val']);
+      assert.equal(query.conditions, '"field" = $1');
+      assert.deepEqual(query.params, ['val']);
+    });
+
+    it('should build an order clause from an array of sort criteria', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1'},
+          {expr: 'col1 + col2'}
+        ]
+      });
+
+      assert.equal(query.order, '"col1" ASC,col1 + col2 ASC');
+    });
+
+    it('should apply directions', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1', direction: 'desc'},
+          {expr: 'col1 + col2', direction: 'asc'}
+        ]
+      });
+
+      assert.equal(query.order, '"col1" DESC,col1 + col2 ASC');
+    });
+
+    it('should be case-insensitive about directions', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1', direction: 'DESC'},
+          {expr: 'col1 + col2', direction: 'ASC'}
+        ]
+      });
+
+      assert.equal(query.order, '"col1" DESC,col1 + col2 ASC');
+    });
+
+    it('should apply null positioning', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1', direction: 'desc', nulls: 'last'},
+          {expr: 'col1 + col2', direction: 'asc', nulls: 'first'}
+        ]
+      });
+
+      assert.equal(query.order, '"col1" DESC NULLS LAST,col1 + col2 ASC NULLS FIRST');
+    });
+
+    it('should be case-insensitive about null positioning', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1', direction: 'DESC', nulls: 'last'},
+          {expr: 'col1 + col2', direction: 'ASC', nulls: 'first'}
+        ]
+      });
+
+      assert.equal(query.order, '"col1" DESC NULLS LAST,col1 + col2 ASC NULLS FIRST');
+    });
+
+    it('should apply both cast type and direction', function () {
+      const query = new Select(source, {}, {
+        order: [
+          {field: 'col1', type: 'int', direction: 'desc'},
+          {expr: 'col1 + col2', type: 'text', direction: 'asc'}
+        ]
+      });
+
+      assert.equal(query.order, '("col1")::int DESC,(col1 + col2)::text ASC');
+    });
+  });
+
+  describe('buildSelectList', function () {
+    it('fills in *', function () {
+      const query = new Select(source);
+
+      assert.deepEqual(query.buildSelectList(), ['*']);
+    });
+
+    it('errors if nothing is explicitly passed', function () {
+      const query = new Select(source);
+
+      assert.throws(() => query.buildSelectList(null, {}), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
+      assert.throws(() => query.buildSelectList([], null), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
+      assert.throws(() => query.buildSelectList([], {}), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
+    });
+
+    it('should quote fields', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList(['col1']);
+
+      assert.deepEqual(list, ['"col1"']);
+    });
+
+    it('should quote multiple fields', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList(['col1', 'col2']);
+
+      assert.deepEqual(list, ['"col1"', '"col2"']);
+    });
+
+    it('should parse JSON fields', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList([
+        'field.element',
+        'field.array[0]',
+        'field.array[1].nested[2].element'
+      ]);
+
+      assert.deepEqual(list, [
+        '"field"->>\'element\'',
+        '"field"#>>\'{array,0}\'',
+        '"field"#>>\'{array,1,nested,2,element}\''
+      ]);
+    });
+
+    it('should add id and alias fields in document mode', function () {
+      const query = new Select(source, {}, {document: true});
+      const list = query.buildSelectList(['one', 'two']);
+
+      assert.deepEqual(list, [
+        '"id"',
+        '"body"->>\'one\' AS "one"',
+        '"body"->>\'two\' AS "two"'
+      ]);
+    });
+
+    it('should add expressions', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList([], {
+        colsum: 'col1 + col2',
+        coldiff: 'col1 - col2'
+      });
+
+      assert.deepEqual(list, [
+        'col1 + col2 AS "colsum"',
+        'col1 - col2 AS "coldiff"'
+      ]);
+    });
+
+    it('should add fields and expressions', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList(['col1', 'col2'], {
+        colsum: 'col1 + col2',
+        coldiff: 'col1 - col2'
+      });
+
+      assert.deepEqual(list, [
+        '"col1"',
+        '"col2"',
+        'col1 + col2 AS "colsum"',
+        'col1 - col2 AS "coldiff"'
+      ]);
+    });
+  });
+
+  describe('buildOrderExpression', function () {
+    const query = new Select(source);
+
+    it('throws if an expression is null or undefined', function () {
+      assert.throws(() => query.buildOrderExpression(null));
+      assert.throws(() => query.buildOrderExpression(undefined));
+    });
+
+    it('throws if no field or expr is supplied', function () {
+      assert.throws(() => query.buildOrderExpression({type: 'int'}), 'Missing order field or expr.');
+    });
+
+    it('quotes fields', function () {
+      assert.equal(query.buildOrderExpression({field: 'col1'}), `"col1"`);
+    });
+
+    it('does not quote exprs', function () {
+      assert.equal(query.buildOrderExpression({expr: 'col1 + col2'}), 'col1 + col2');
+    });
+
+    it('applies explicit cast types', function () {
+      assert.equal(query.buildOrderExpression({field: 'col1', type: 'int'}), '("col1")::int');
+      assert.equal(query.buildOrderExpression({expr: 'col1 + col2', type: 'text'}), '(col1 + col2)::text');
+    });
+
+    it('quotes and applies implicit cast types to fields', function () {
+      assert.equal(query.buildOrderExpression({field: 'col1::int'}), '"col1"::int');
+    });
+
+    it('returns a body field with useBody', function () {
+      assert.equal(query.buildOrderExpression({field: 'col1'}, true), '"body"->\'col1\'');
+    });
+
+    it('returns a body field using as-text operations with useBody and an explicit type', function () {
+      assert.equal(query.buildOrderExpression({field: 'col1', type: 'int'}, true), '("body"->>\'col1\')::int');
+    });
+
+    it('ignores useBody with an expr', function () {
+      assert.equal(query.buildOrderExpression({expr: 'col1 + col2'}, true), 'col1 + col2');
+    });
+
+    it('processes JSON arrays', function () {
+      assert.equal(query.buildOrderExpression({field: 'jsonarray[1]'}), '"jsonarray"->1');
+    });
+
+    it('processes complex JSON paths', function () {
+      assert.equal(query.buildOrderExpression({field: 'complex.element[0].with.nested.properties'}), `"complex"#>'{element,0,with,nested,properties}'`);
     });
   });
 
@@ -75,6 +286,11 @@ describe('Select', function () {
     it('should return a basic select', function () {
       const result = new Select(source);
       assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
+    });
+
+    it('should join field arrays', function () {
+      const result = new Select(source, {}, {fields: ['col1', 'col2']});
+      assert.equal(result.format(), 'SELECT "col1","col2" FROM "mytable" WHERE TRUE');
     });
 
     it('orders by position if no pk is present', function () {
@@ -118,62 +334,6 @@ describe('Select', function () {
     it('should add an ONLY', function () {
       const result = new Select(source, {}, {only: true});
       assert.equal(result.format(), 'SELECT * FROM ONLY "mytable" WHERE TRUE');
-    });
-
-    describe('fields', function () {
-      it('should interpolate fields', function () {
-        const result = new Select(source, {}, {fields: ['col1']});
-        assert.equal(result.format(), 'SELECT "col1" FROM "mytable" WHERE TRUE');
-      });
-
-      it('should join arrays', function () {
-        const result = new Select(source, {}, {fields: ['col1', 'col2']});
-        assert.equal(result.format(), 'SELECT "col1","col2" FROM "mytable" WHERE TRUE');
-      });
-
-      it('should parse JSON fields', function () {
-        const result = new Select(source, {}, {
-          fields: [
-            'field.element',
-            'field.array[0]',
-            'field.array[1].nested[2].element'
-          ]
-        });
-
-        assert.equal(result.format(), `SELECT "field"->>'element',"field"#>>'{array,0}',"field"#>>'{array,1,nested,2,element}' FROM "mytable" WHERE TRUE`);
-      });
-
-      it('should alias fields in document mode', function () {
-        const result = new Select(source, {}, {
-          fields: ['one', 'two'],
-          document: true
-        });
-
-        assert.equal(result.format(), `SELECT "body"->>'one' AS "one","body"->>'two' AS "two",id FROM "mytable" WHERE TRUE`);
-      });
-
-      it('should add expressions', function () {
-        const result = new Select(source, {}, {
-          exprs: {
-            colsum: 'col1 + col2',
-            coldiff: 'col1 - col2'
-          }
-        });
-
-        assert.equal(result.format(), 'SELECT col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE');
-      });
-
-      it('should add fields and expressions', function () {
-        const result = new Select(source, {}, {
-          fields: ['col1', 'col2'],
-          exprs: {
-            colsum: 'col1 + col2',
-            coldiff: 'col1 - col2'
-          }
-        });
-
-        assert.equal(result.format(), 'SELECT "col1","col2",col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM "mytable" WHERE TRUE');
-      });
     });
 
     describe('for update/for share', function () {
@@ -230,8 +390,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.equal(result.pagination, '("col1","col2") > ($1,$2)');
-        assert.equal(result.where.conditions, 'TRUE');
-        assert.isEmpty(result.where.params);
+        assert.equal(result.conditions, 'TRUE');
         assert.deepEqual(result.params, [123, 456]);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE AND ("col1","col2") > ($1,$2) ORDER BY "col1" ASC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -252,8 +411,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.equal(result.pagination, '("col1","col2") < ($1,$2)');
-        assert.equal(result.where.conditions, 'TRUE');
-        assert.isEmpty(result.where.params);
+        assert.equal(result.conditions, 'TRUE');
         assert.deepEqual(result.params, [123, 456]);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE AND ("col1","col2") < ($1,$2) ORDER BY "col1" DESC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -270,8 +428,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.isUndefined(result.pagination);
-        assert.equal(result.where.conditions, 'TRUE');
-        assert.isEmpty(result.where.params);
+        assert.equal(result.conditions, 'TRUE');
         assert.deepEqual(result.params, []);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "col1" ASC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -288,7 +445,7 @@ describe('Select', function () {
           }]
         });
 
-        assert.equal(result.where.conditions, 'col2 = $1');
+        assert.equal(result.conditions, 'col2 = $1');
         assert.deepEqual(result.params, [1, 5]);
         assert.equal(result.pagination, '("col1") > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE col2 = $1 AND ("col1") > ($2) ORDER BY "col1" ASC FETCH FIRST 10 ROWS ONLY');
@@ -307,58 +464,34 @@ describe('Select', function () {
           }]
         });
 
-        assert.equal(result.where.conditions, '"col2" = $1');
+        assert.equal(result.conditions, '"col2" = $1');
         assert.deepEqual(result.params, ['value2', 5]);
         assert.equal(result.pagination, '(("col1")::int) > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE "col2" = $1 AND (("col1")::int) > ($2) ORDER BY ("col1")::int ASC FETCH FIRST 10 ROWS ONLY');
       });
 
-      it('requires an order definition', function (done) {
-        const result = new Select(source, {}, {pageLength: 10});
-
-        try {
-          result.format();
-        } catch (err) {
-          assert.equal(err.message, 'Keyset paging with pageLength requires an explicit order directive');
-
-          done();
-        }
+      it('requires an order definition', function () {
+        assert.throws(() => new Select(source, {}, {pageLength: 10}), 'Keyset paging with pageLength requires an explicit order directive');
       });
 
-      it('does not work with offsets', function (done) {
-        const result = new Select(source, {}, {
+      it('does not work with offsets', function () {
+        assert.throws(() => new Select(source, {}, {
           pageLength: 10,
           order: [{
             field: 'col1'
           }],
           offset: 10
-        });
-
-        try {
-          result.format();
-        } catch (err) {
-          assert.equal(err.message, 'Keyset paging cannot be used with offset and limit');
-
-          done();
-        }
+        }), 'Keyset paging cannot be used with offset and limit');
       });
 
-      it('does not work with limits', function (done) {
-        const result = new Select(source, {}, {
+      it('does not work with limits', function () {
+        assert.throws(() => new Select(source, {}, {
           pageLength: 10,
           order: [{
             field: 'col1'
           }],
           limit: 10
-        });
-
-        try {
-          result.format();
-        } catch (err) {
-          assert.equal(err.message, 'Keyset paging cannot be used with offset and limit');
-
-          done();
-        }
+        }), 'Keyset paging cannot be used with offset and limit');
       });
     });
 
