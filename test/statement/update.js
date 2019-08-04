@@ -19,9 +19,17 @@ describe('Update', function () {
       const query = new Update(source);
 
       assert.equal(query.source.delimitedFullName, '"testsource"');
-      assert.equal(query.generator, 'tableGenerator');
+
       assert.isFalse(query.only);
+      assert.deepEqual(query.changes, []);
+      assert.equal(query.conditions, 'TRUE');
+      assert.deepEqual(query.returning, ['*']);
+      assert.lengthOf(query.params, 0);
+      assert.isUndefined(query.build);
+      assert.isUndefined(query.document);
+      assert.isUndefined(query.decompose);
       assert.isFalse(query.single);
+      assert.isFalse(query.stream);
     });
 
     it('should apply options', function () {
@@ -41,7 +49,7 @@ describe('Update', function () {
       assert.isTrue(query.document);
       assert.isTrue(query.only);
       assert.isTrue(query.stream);
-      assert.sameMembers(query.fields, ['"field1"', '"field2"']);
+      assert.sameMembers(query.returning, ['"field1"', '"field2"']);
     });
   });
 
