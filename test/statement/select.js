@@ -51,11 +51,11 @@ describe('Select', function () {
       assert.isUndefined(query.offset);
       assert.isUndefined(query.limit);
       assert.isUndefined(query.pageLength);
-      assert.isUndefined(query.forUpdate);
-      assert.isUndefined(query.forShare);
+      assert.isFalse(query.forUpdate);
+      assert.isFalse(query.forShare);
       assert.lengthOf(query.params, 0);
-      assert.isUndefined(query.build);
-      assert.isUndefined(query.document);
+      assert.isFalse(query.build);
+      assert.isFalse(query.document);
       assert.isUndefined(query.decompose);
       assert.isFalse(query.single);
       assert.isFalse(query.stream);

@@ -25,8 +25,8 @@ describe('Update', function () {
       assert.equal(query.conditions, 'TRUE');
       assert.deepEqual(query.returning, ['*']);
       assert.lengthOf(query.params, 0);
-      assert.isUndefined(query.build);
-      assert.isUndefined(query.document);
+      assert.isFalse(query.build);
+      assert.isFalse(query.document);
       assert.isUndefined(query.decompose);
       assert.isFalse(query.single);
       assert.isFalse(query.stream);
