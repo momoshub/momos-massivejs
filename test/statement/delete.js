@@ -18,30 +18,15 @@ describe('Delete', function () {
     it('should have defaults', function () {
       const query = new Delete(source);
 
-      assert.equal(query.source.delimitedFullName, '"testsource"');
-      assert.equal(query.generator, 'tableGenerator');
       assert.isFalse(query.only);
+      assert.equal(query.conditions, 'TRUE');
+      assert.deepEqual(query.returning, ['*']);
+      assert.lengthOf(query.params, 0);
+      assert.isUndefined(query.build);
+      assert.isUndefined(query.document);
+      assert.isUndefined(query.decompose);
       assert.isFalse(query.single);
-    });
-
-    it('should apply options', function () {
-      const query = new Delete(source, {}, {
-        build: true,
-        decompose: true,
-        document: true,
-        only: true,
-        single: true,
-        stream: true,
-        fields: ['field1', 'field2']
-      });
-
-      assert.equal(query.source.delimitedFullName, '"testsource"');
-      assert.isTrue(query.build);
-      assert.isTrue(query.decompose);
-      assert.isTrue(query.document);
-      assert.isTrue(query.only);
-      assert.isTrue(query.stream);
-      assert.sameMembers(query.fields, ['"field1"', '"field2"']);
+      assert.isFalse(query.stream);
     });
   });
 
