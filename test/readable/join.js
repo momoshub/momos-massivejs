@@ -687,6 +687,34 @@ describe('join', function () {
         });
       });
     });
+
+    it('deep inserts', async function () {
+      const join = await db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      });
+
+      const result = await join.insert({
+        val: 'newer and improveder',
+        beta: [{alpha_id: undefined, val: 'asdf'}]
+      });
+
+      assert.deepEqual(result, {id: result.id, val: 'newer and improveder'});
+
+      const inserted = await join.find(result.id);
+
+      assert.deepEqual(inserted, [{
+        id: result.id,
+        val: 'newer and improveder',
+        beta: [{
+          id: 6,
+          alpha_id: result.id,
+          val: 'asdf'
+        }]
+      }]);
+    });
   });
 
   describe('updates', function () {
