@@ -16,30 +16,35 @@ describe('Insert', function () {
 
   describe('ctor', function () {
     it('should have defaults', function () {
-      const query = new Insert(source);
+      const query = new Insert(source, {field1: 'val'});
 
       assert.equal(query.source.delimitedFullName, '"testsource"');
+
+      assert.isFalse(query.only);
+      assert.deepEqual(query.records, [{field1: 'val'}]);
+      assert.deepEqual(query.returning, ['*']);
+      assert.deepEqual(query.params, ['val']);
+      assert.isFalse(query.build);
+      assert.isFalse(query.document);
+      assert.isUndefined(query.decompose);
+      assert.isTrue(query.single);
+      assert.isFalse(query.stream);
     });
 
-    it('should apply options', function () {
-      const query = new Insert(source, {}, {
-        build: true,
-        decompose: true,
-        document: true,
-        only: true,
-        stream: true,
-        onConflictIgnore: true,
-        fields: ['string', 'number']
-      });
+    it('detects record arrays', function () {
+      const query = new Insert(source, [{field1: 'val1'}, {field1: 'val2'}]);
 
       assert.equal(query.source.delimitedFullName, '"testsource"');
-      assert.isTrue(query.build);
-      assert.isTrue(query.decompose);
-      assert.isTrue(query.document);
-      assert.isTrue(query.only);
-      assert.isTrue(query.stream);
-      assert.isTrue(query.onConflictIgnore);
-      assert.sameMembers(query.fields, ['"string"', '"number"']);
+
+      assert.isFalse(query.only);
+      assert.deepEqual(query.records, [{field1: 'val1'}, {field1: 'val2'}]);
+      assert.deepEqual(query.returning, ['*']);
+      assert.deepEqual(query.params, ['val1', 'val2']);
+      assert.isFalse(query.build);
+      assert.isFalse(query.document);
+      assert.isUndefined(query.decompose);
+      assert.isFalse(query.single);
+      assert.isFalse(query.stream);
     });
 
     it('should process columns and parameters', function () {
@@ -57,6 +62,23 @@ describe('Insert', function () {
       assert.deepEqual(query.columns, ['string', 'boolean', 'int', 'number', 'object', 'array', 'emptyArray']);
       assert.lengthOf(query.params, 7);
       assert.deepEqual(query.params, ['hi', true, 123, 456.78, {field: 'value'}, [1, 2, 3], []]);
+    });
+  });
+
+  describe('compileFieldSet', function () {
+    it('creates a set of field names', function () {
+      const insert = new Insert(source, {field1: 'value1'});
+      const fields = insert.compileFieldSet([{
+        one: 'two',
+        three: 'four'
+      }, {
+        five: 'six'
+      }, {
+        five: 'seven',
+        eight: 'nine'
+      }]);
+
+      assert.sameMembers(fields, ['one', 'three', 'five', 'eight']);
     });
   });
 
@@ -166,7 +188,14 @@ describe('Insert', function () {
           }
         );
 
-        assert.equal(result.format(), 'WITH inserted AS (INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *), q_0_0 AS (INSERT INTO "junction_one" ("source_id", "j1fk", "j1field") SELECT "id", $2, $3 FROM inserted), q_1_0 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $4, $5 FROM inserted), q_1_1 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $6, $7 FROM inserted), q_2_0 AS (INSERT INTO "junction"."in_schema" ("source_id", "jsfk", "jsfield") SELECT "id", $8, $9 FROM inserted) SELECT * FROM inserted');
+        assert.equal(result.format(), [
+          'WITH inserted AS (INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *), ',
+          'q_0_0 AS (INSERT INTO "junction_one" ("source_id", "j1fk", "j1field") SELECT "id", $2, $3 FROM inserted), ',
+          'q_1_0 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $4, $5 FROM inserted), ',
+          'q_1_1 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $6, $7 FROM inserted), ',
+          'q_2_0 AS (INSERT INTO "junction"."in_schema" ("source_id", "jsfk", "jsfield") SELECT "id", $8, $9 FROM inserted) ',
+          'SELECT * FROM inserted'
+        ].join(''));
         assert.deepEqual(result.params, ['value1', 10, 'something', 101, 'j2f1', 102, null, 111, 'abc']);
       });
 
@@ -179,15 +208,6 @@ describe('Insert', function () {
               j1fk: 10,
               source_id: undefined,
               j1field: 'something'
-            }],
-            junction_many: [{
-              source_id_another_name: undefined,
-              j2fk: 101,
-              j2field: 'j2f1'
-            }, {
-              source_id_another_name: undefined,
-              j2fk: 102,
-              j2field: null
             }]
           },
           {deepInsert: false}
@@ -198,43 +218,26 @@ describe('Insert', function () {
       });
 
       it('should throw when trying to create junction queries for multiple records', function () {
-        const x = new Insert(
+        assert.throws(() => new Insert(
           source,
           [{
             field1: 'value1',
             junction_one: [{
               j1fk: 10,
               j1field: 'something'
-            }],
-            junction_many: [{
-              j2fk: 101,
-              j2field: 'j2f1'
-            }, {
-              j2fk: 102,
-              j2field: 'j2f2'
             }]
           }, {
             field1: 'value2',
             junction_one: [{
               j1fk: 20,
               j1field: 'something else'
-            }],
-            junction_many: [{
-              j2fk: 201,
-              j2field: 'j2f3'
-            }, {
-              j2fk: 202,
-              j2field: 'j2f4'
             }]
           }], {
             deepInsert: true
-          }
-        );
-
-        assert.throws(x.format.bind(x), 'Found potential deep insert definitions in the record array. Deep insert is only supported for single records. If you are not attempting a deep insert, ensure that your records do not contain non-column keys or use the {deepInsert: false} option.');
+          }), 'Multi-table or deep insert is only supported for single records.');
       });
 
-      it('should throw when formatting a deep insert with bad definitions', function () {
+      it('should throw for non-array junctions', function () {
         const x = new Insert(
           source, {
             field1: 'value1',
@@ -244,7 +247,7 @@ describe('Insert', function () {
           }
         );
 
-        assert.throws(x.format.bind(x), 'Attempted a deep insert with a bad junction definition. If you did not intend a deep insert, ensure that your record only contains values for database columns or disable this functionality with the {deepInsert: false} option.');
+        assert.throws(x.format.bind(x), 'Dependent records in a deep or multi-table insert must be supplied as arrays.');
       });
     });
   });
