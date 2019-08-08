@@ -21,8 +21,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c1'},
@@ -36,8 +35,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c1'},
@@ -53,8 +51,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true // force an array even though this can only ever be a flat row
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c1'});
 
@@ -67,8 +64,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_arr: 'arr'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_arr: 'arr'},
-        array: true // force an array even though this can only ever be a flat row
+        columns: {children_id: 'id', children_arr: 'arr'}
       }
     }, {
       parent_id: 1,
@@ -89,8 +85,7 @@ describe('decompose', function () {
       columns: ['parent_id', 'parent_val'],
       children: {
         pk: 'children_id',
-        columns: ['children_id', 'children_val'],
-        array: true
+        columns: ['children_id', 'children_val']
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c1'},
@@ -106,8 +101,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 11, children_val: 'c2'},
@@ -121,8 +115,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: 12, children_val: 'c1'},
@@ -138,13 +131,11 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children1: {
         pk: 'children1_id',
-        columns: {children1_id: 'id', children1_val: 'val'},
-        array: true
+        columns: {children1_id: 'id', children1_val: 'val'}
       },
       children2: {
         pk: 'children2_id',
-        columns: {children2_id: 'id', children2_val: 'val'},
-        array: true
+        columns: {children2_id: 'id', children2_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children1_id: 11, children1_val: 'c1', children2_id: 21, children2_val: 'd1'},
@@ -167,11 +158,9 @@ describe('decompose', function () {
       children1: {
         pk: 'children1_id',
         columns: {children1_id: 'id', children1_val: 'val'},
-        array: true,
         children2: {
           pk: 'children1_children2_id',
-          columns: {children1_children2_id: 'id', children1_children2_val: 'val'},
-          array: true
+          columns: {children1_children2_id: 'id', children1_children2_val: 'val'}
         }
       }
     }, [
@@ -201,8 +190,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_id',
-        columns: {children_id: 'id', children_val: 'val'},
-        array: true
+        columns: {children_id: 'id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_id: null, children_val: null},
@@ -219,11 +207,9 @@ describe('decompose', function () {
       children: {
         pk: 'children_id',
         columns: {children_id: 'id', children_val: 'val'},
-        array: true,
         grandchildren: {
           pk: 'grandchildren_id',
-          columns: {grandchildren_id: 'id', grandchildren_val: 'val'},
-          array: true
+          columns: {grandchildren_id: 'id', grandchildren_val: 'val'}
         }
       }
     }, [
@@ -282,10 +268,12 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       child: {
         pk: 'child_id',
+        decomposeTo: 'object',
         columns: {child_id: 'id', child_val: 'val'},
         grandchild: {
           pk: 'grandchild_id',
-          columns: {grandchild_id: 'id', grandchild_val: 'val'}
+          columns: {grandchild_id: 'id', grandchild_val: 'val'},
+          decomposeTo: 'object'
         }
       }
     }, [
@@ -302,9 +290,11 @@ describe('decompose', function () {
       child: {
         pk: 'child_id',
         columns: {child_id: 'id', child_val: 'val'},
+        decomposeTo: 'object',
         grandchild: {
           pk: 'grandchild_id',
-          columns: {grandchild_id: 'id', grandchild_val: 'val'}
+          columns: {grandchild_id: 'id', grandchild_val: 'val'},
+          decomposeTo: 'object'
         }
       }
     }, [
@@ -322,8 +312,7 @@ describe('decompose', function () {
       columns: {parent_id: 'id', parent_val: 'val'},
       children: {
         pk: 'children_child_id',
-        columns: {children_child_id: 'child_id', children_val: 'val'},
-        array: true
+        columns: {children_child_id: 'child_id', children_val: 'val'}
       }
     }, [
       {parent_id: 1, parent_val: 'p1', children_child_id: 11, children_val: 'c1'},
@@ -345,14 +334,17 @@ describe('decompose', function () {
       },
       account: {
         pk: 'account_id',
+        decomposeTo: 'object',
         columns: {account_id: 'id'}
       },
       contact: {
         pk: 'this_id',
+        decomposeTo: 'object',
         columns: {contact_email: 'email', contact_phone: 'phone'}
       },
       address: {
         pk: 'this_id',
+        decomposeTo: 'object',
         columns: {
           address_number: 'number',
           address_street: 'street',
@@ -364,6 +356,7 @@ describe('decompose', function () {
         },
         coords: {
           pk: 'this_id',
+          decomposeTo: 'object',
           columns: {
             address_coords_latitude: 'latitude',
             address_coords_longitude: 'longitude'
@@ -377,8 +370,7 @@ describe('decompose', function () {
           labels_name: 'name',
           labels_color: 'color',
           labels_type: 'type'
-        },
-        array: true
+        }
       }
     }, [
       {
@@ -474,11 +466,11 @@ describe('decompose', function () {
       children1: {
         pk: ['children1_id_one', 'children1_id_two'],
         columns: {children1_id_one: 'cid_one', children1_id_two: 'cid_two', children1_val: 'val'},
-        array: true,
+        decomposeTo: 'array',
         children2: {
           pk: ['children1_children2_id_one', 'children1_children2_id_two'],
           columns: {children1_children2_id_one: 'ccid_one', children1_children2_id_two: 'ccid_two', children1_children2_val: 'val'},
-          array: true
+          decomposeTo: 'array'
         }
       }
     }, [{
@@ -501,11 +493,11 @@ describe('decompose', function () {
       children1: {
         pk: ['children1_id_one', 'children1_id_two'],
         columns: {children1_id_one: 'id_one', children1_id_two: 'id_two', children1_val: 'val'},
-        array: true,
+        decomposeTo: 'array',
         children2: {
           pk: ['children1_children2_id_one', 'children1_children2_id_two'],
           columns: {children1_children2_id_one: 'id_one', children1_children2_id_two: 'id_two', children1_children2_val: 'val'},
-          array: true
+          decomposeTo: 'array'
         }
       }
     }, [{

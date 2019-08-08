@@ -347,12 +347,12 @@ describe('join', function () {
     });
   });
 
-  it('decomposes objects', function () {
+  it('changes the decomposition target type', function () {
     return db.alpha.join({
       beta: {
         type: 'INNER',
         on: {alpha_id: 'id'},
-        object: true
+        decomposeTo: 'object'
       }
     }).find({
       'alpha.id': 2

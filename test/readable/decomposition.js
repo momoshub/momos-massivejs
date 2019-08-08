@@ -38,7 +38,6 @@ describe('decomposing results', function () {
             test_id: 'id',
             name: 'name'
           },
-          array: true,
           issues: {
             pk: 'id',
             columns: {
@@ -46,8 +45,7 @@ describe('decomposing results', function () {
               user_id: 'user_id',
               test_id: 'test_id',
               description: 'description'
-            },
-            array: true
+            }
           }
         }
       }
@@ -105,7 +103,6 @@ describe('decomposing results', function () {
             test_id: 'id',
             name: 'name'
           },
-          array: true,
           issues: {
             pk: 'id',
             columns: {
@@ -113,8 +110,7 @@ describe('decomposing results', function () {
               user_id: 'user_id',
               test_id: 'test_id',
               description: 'description'
-            },
-            array: true
+            }
           }
         }
       }
@@ -152,7 +148,6 @@ describe('decomposing results', function () {
             test_id: 'id',
             name: 'name'
           },
-          array: true,
           issues: {
             pk: 'id',
             columns: {
@@ -160,8 +155,7 @@ describe('decomposing results', function () {
               user_id: 'user_id',
               test_id: 'test_id',
               description: 'description'
-            },
-            array: true
+            }
           }
         }
       },
