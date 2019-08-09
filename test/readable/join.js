@@ -143,7 +143,6 @@ describe('join', function () {
         on: {id: 'alpha_id_two'}
       }
     }).find({
-      // TODO this raises some questions about permitted formats for criteria/order/etc
       'alpha1.id': 3
     }).then(result => {
       assert.deepEqual(result, [{
@@ -273,6 +272,24 @@ describe('join', function () {
       beta: {
         on: {alpha_id: 'id'}
       }
+    }).find({
+      'alpha.id >': 1
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+      }, {
+        id: 3, val: 'three', beta: [{
+          id: 3, alpha_id: 3, val: 'alpha three'
+        }, {
+          id: 4, alpha_id: 3, val: 'alpha three again'
+        }]
+      }]);
+    });
+  });
+
+  it('does a basic inner join with the bare minimum object', function () {
+    return db.alpha.join({
+      beta: true
     }).find({
       'alpha.id >': 1
     }).then(result => {
@@ -839,7 +856,6 @@ describe('join', function () {
     });
   });
 
-  // TODO change decomposition default behavior to arrays
   describe('useless methods', function () {
     it('errors on findOne', function () {
       return db.alpha.join('beta')
