@@ -92,71 +92,6 @@ describe('join', function () {
     });
   });
 
-  it('defers to an explicit relation but aliases to the key', function () {
-    return db.alpha.join({
-      asdf: {
-        type: 'INNER',
-        relation: 'beta',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'alpha.id': 3
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 3,
-        val: 'three',
-        asdf: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('aliases to the table name when processing an implicit relation with a schema', function () {
-    return db.alpha.join({
-      'sch.epsilon': {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }).find({}, {build: false}).then(result => {
-      assert.deepEqual(result, [{
-        id: 1, val: 'one',
-        epsilon: [{
-          id: 1, alpha_id: 1, val: 'alpha one'
-        }]
-      }]);
-    });
-  });
-
-  it('joins the same table multiple times under different aliases', function () {
-    return db.gamma.join({
-      alpha1: {
-        type: 'INNER',
-        relation: 'alpha',
-        on: {id: 'alpha_id_one'}
-      },
-      alpha2: {
-        type: 'INNER',
-        relation: 'alpha',
-        on: {id: 'alpha_id_two'}
-      }
-    }).find({
-      'alpha1.id': 3
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 5,
-        beta_id: 4,
-        alpha_id_one: 3,
-        alpha_id_two: 1,
-        val: 'alpha three alpha one beta four',
-        alpha1: [{id: 3, val: 'three'}],
-        alpha2: [{id: 1, val: 'one'}]
-      }]);
-    });
-  });
-
   it('joins multiple tables at multiple levels', function () {
     return db.alpha.join({
       beta: {
@@ -191,43 +126,6 @@ describe('join', function () {
     });
   });
 
-  it('errors when the origin name reappears', function () {
-    assert.throws(() => db.alpha.join({
-      alpha: {
-        on: {id: 'id'}
-      }
-    }), 'Bad join definition: alpha is repeated.');
-  });
-
-  it('errors when another relation name reappears', function () {
-    assert.throws(() => db.alpha.join({
-      beta: {
-        on: {alpha_id: 'id'},
-        beta: {
-          on: {id: 'id'}
-        }
-      }
-    }), 'Bad join definition: beta is repeated.');
-  });
-
-  it('allows self joins with an alias', function () {
-    return db.alpha.join({
-      alpha_again: {
-        relation: 'alpha',
-        on: {id: 'id'}
-      }
-    }).find({
-      id: 1
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 1, val: 'one',
-        alpha_again: [{
-          id: 1, val: 'one'
-        }]
-      }]);
-    });
-  });
-
   it('can join on any fields', function () {
     return db.beta.join({
       'sch.epsilon': {
@@ -243,79 +141,6 @@ describe('join', function () {
           id: 1,
           alpha_id: 1,
           val: 'alpha one'
-        }]
-      }]);
-    });
-  });
-
-  it('errors for invalid explicit relations', function () {
-    assert.throws(() => db.alpha.join({
-      alias: {
-        type: 'INNER',
-        relation: 'qwertyuiop',
-        on: {alpha_id: 'id'}
-      }
-    }), 'Bad join definition: unknown database entity qwertyuiop.');
-  });
-
-  it('errors for invalid implicit relations', function () {
-    assert.throws(() => db.alpha.join({
-      qwertyuiop: {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }), 'Bad join definition: unknown database entity qwertyuiop.');
-  });
-
-  it('defaults to inner joins', function () {
-    return db.alpha.join({
-      beta: {
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'alpha.id >': 1
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
-      }, {
-        id: 3, val: 'three', beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('does a basic inner join with the bare minimum object', function () {
-    return db.alpha.join({
-      beta: true
-    }).find({
-      'alpha.id >': 1
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
-      }, {
-        id: 3, val: 'three', beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('does a basic inner join with just a string', function () {
-    return db.alpha.join('beta').find({
-      'alpha.id >': 1
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
-      }, {
-        id: 3, val: 'three', beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
         }]
       }]);
     });
@@ -344,46 +169,6 @@ describe('join', function () {
     });
   });
 
-  it('shortcuts criteria keys without path info to the primary table', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      id: 3
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 3, val: 'three',
-        beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('changes the decomposition target type', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        on: {alpha_id: 'id'},
-        decomposeTo: 'object'
-      }
-    }).find({
-      'alpha.id': 2
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 2,
-        val: 'two',
-        beta: {
-          id: 2, alpha_id: 2, val: 'alpha two'
-        }
-      }]);
-    });
-  });
-
   it('decomposes multiple records', function () {
     return db.alpha.join({
       beta: {
@@ -404,25 +189,6 @@ describe('join', function () {
           id: 3, alpha_id: 3, val: 'alpha three'
         }, {
           id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('processes keys referencing the relation instead of the alias', function () {
-    return db.alpha.join({
-      epsilon: {
-        type: 'INNER',
-        relation: 'sch.epsilon',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'sch.epsilon.val': 'alpha one'
-    }, {build: false}).then(result => {
-      assert.deepEqual(result, [{
-        id: 1, val: 'one',
-        epsilon: [{
-          id: 1, alpha_id: 1, val: 'alpha one'
         }]
       }]);
     });
@@ -472,176 +238,6 @@ describe('join', function () {
     });
   });
 
-  it('applies options', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'alpha.id': 3
-    }, {build: true}).then(result => {
-      assert.equal(result.sql, [
-        'SELECT "alpha"."id" AS "alpha__id",',
-        '"alpha"."val" AS "alpha__val",',
-        '"beta"."alpha_id" AS "beta__alpha_id",',
-        '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
-        'FROM "alpha" ',
-        'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
-        'WHERE "alpha"."id" = $1'
-      ].join(''));
-      assert.deepEqual(result.params, [3]);
-    });
-  });
-
-  it('sorts by fields in a joined relation', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'alpha.id >': 1
-    }, {
-      build: false,
-      order: [{field: 'beta.val'}]
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 3, val: 'three',
-        beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }, {
-        id: 2, val: 'two',
-        beta: [{
-          id: 2, alpha_id: 2, val: 'alpha two'
-        }]
-      }]);
-    });
-  });
-
-  it('shortcuts ordering keys without path info to the primary table', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        on: {alpha_id: 'id'}
-      }
-    }).find({
-      'alpha.id': 3
-    }, {
-      order: [{field: 'val', direction: 'desc'}],
-      build: true
-    }).then(result => {
-      assert.equal(result.sql, [
-        'SELECT "alpha"."id" AS "alpha__id",',
-        '"alpha"."val" AS "alpha__val",',
-        '"beta"."alpha_id" AS "beta__alpha_id",',
-        '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
-        'FROM "alpha" ',
-        'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
-        'WHERE "alpha"."id" = $1 ',
-        'ORDER BY "alpha"."val" DESC'
-      ].join(''));
-      assert.deepEqual(result.params, [3]);
-    });
-  });
-
-  it('autogenerates keys when one possible join fk matches', function () {
-    return db.alpha.join({
-      beta: {type: 'INNER'}
-    }).find({
-      'alpha.id': 3
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 3,
-        val: 'three',
-        beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
-        }]
-      }]);
-    });
-  });
-
-  it('autogenerates keys when one possible origin fk matches', function () {
-    return db.beta.join({
-      alpha: {type: 'INNER'}
-    }).find({
-      'alpha.id': 3
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 3, alpha_id: 3, val: 'alpha three',
-        alpha: [{
-          id: 3,
-          val: 'three'
-        }]
-      }, {
-        id: 4, alpha_id: 3, val: 'alpha three again',
-        alpha: [{
-          id: 3,
-          val: 'three'
-        }]
-      }]);
-    });
-  });
-
-  it('autogenerates keys deeper in the join tree', function () {
-    return db.alpha.join({
-      beta: {
-        type: 'INNER',
-        gamma: {
-          type: 'INNER'
-        }
-      }
-    }).find({
-      'alpha.id >': 1
-    }).then(result => {
-      assert.deepEqual(result, [{
-        id: 2, val: 'two',
-        beta: [{
-          id: 2, alpha_id: 2, val: 'alpha two',
-          gamma: [{
-            id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2,
-            val: 'alpha two alpha two beta two'
-          }, {
-            id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3,
-            val: 'alpha two alpha three beta two again'
-          }]
-        }]
-      }, {
-        id: 3, val: 'three',
-        beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three',
-          gamma: [{
-            id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null,
-            val: 'alpha two (alpha null) beta three'
-          }]
-        }, {
-          id: 4, alpha_id: 3, val: 'alpha three again',
-          gamma: [{
-            id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1,
-            val: 'alpha three alpha one beta four'
-          }]
-        }]
-      }]);
-    });
-  });
-
-  it('errors if keys are not specified and there are no possible fks', function () {
-    assert.throws(() => db.beta.join({
-      'sch.epsilon': {type: 'INNER'}
-    }), 'An explicit \'on\' mapping is required for sch.epsilon.');
-  });
-
-  it('errors if keys are not specified and multiple possible fks match', function () {
-    assert.throws(() => db.gamma.join({
-      alpha: {type: 'INNER'}
-    }), 'Ambiguous foreign keys for alpha. Define join keys explicitly.');
-  });
-
   it('caches readables', function () {
     db.entityCache = {};
 
@@ -670,6 +266,418 @@ describe('join', function () {
     assert.notEqual(a, c);
     assert.notEqual(b, c);
     assert.lengthOf(Object.keys(db.entityCache), 2);
+  });
+
+  it('errors when the origin name reappears', function () {
+    assert.throws(() => db.alpha.join({
+      alpha: {
+        on: {id: 'id'}
+      }
+    }), 'Bad join definition: alpha is repeated.');
+  });
+
+  it('errors when another relation name reappears', function () {
+    assert.throws(() => db.alpha.join({
+      beta: {
+        on: {alpha_id: 'id'},
+        beta: {
+          on: {id: 'id'}
+        }
+      }
+    }), 'Bad join definition: beta is repeated.');
+  });
+
+  it('errors for invalid explicit relations', function () {
+    assert.throws(() => db.alpha.join({
+      alias: {
+        type: 'INNER',
+        relation: 'qwertyuiop',
+        on: {alpha_id: 'id'}
+      }
+    }), 'Bad join definition: unknown database entity qwertyuiop.');
+  });
+
+  it('errors for invalid implicit relations', function () {
+    assert.throws(() => db.alpha.join({
+      qwertyuiop: {
+        type: 'INNER',
+        on: {alpha_id: 'id'}
+      }
+    }), 'Bad join definition: unknown database entity qwertyuiop.');
+  });
+
+  describe('aliasing', function () {
+    it('defers to an explicit relation but aliases to the key', function () {
+      return db.alpha.join({
+        asdf: {
+          type: 'INNER',
+          relation: 'beta',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id': 3
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3,
+          val: 'three',
+          asdf: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('aliases to the table name when processing an implicit relation with a schema', function () {
+      return db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({}, {build: false}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1, val: 'one',
+          epsilon: [{
+            id: 1, alpha_id: 1, val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('joins the same table multiple times under different aliases', function () {
+      return db.gamma.join({
+        alpha1: {
+          type: 'INNER',
+          relation: 'alpha',
+          on: {id: 'alpha_id_one'}
+        },
+        alpha2: {
+          type: 'INNER',
+          relation: 'alpha',
+          on: {id: 'alpha_id_two'}
+        }
+      }).find({
+        'alpha1.id': 3
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 5,
+          beta_id: 4,
+          alpha_id_one: 3,
+          alpha_id_two: 1,
+          val: 'alpha three alpha one beta four',
+          alpha1: [{id: 3, val: 'three'}],
+          alpha2: [{id: 1, val: 'one'}]
+        }]);
+      });
+    });
+
+    it('allows self joins with an alias', function () {
+      return db.alpha.join({
+        alpha_again: {
+          relation: 'alpha',
+          on: {id: 'id'}
+        }
+      }).find({
+        id: 1
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 1, val: 'one',
+          alpha_again: [{
+            id: 1, val: 'one'
+          }]
+        }]);
+      });
+    });
+
+    it('processes keys referencing the relation instead of the alias', function () {
+      return db.alpha.join({
+        epsilon: {
+          type: 'INNER',
+          relation: 'sch.epsilon',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'sch.epsilon.val': 'alpha one'
+      }, {build: false}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1, val: 'one',
+          epsilon: [{
+            id: 1, alpha_id: 1, val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+  });
+
+  describe('defaults and shortcuts', function () {
+    it('defaults to inner joins', function () {
+      return db.alpha.join({
+        beta: {
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id >': 1
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+        }, {
+          id: 3, val: 'three', beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('does a basic inner join with the bare minimum object', function () {
+      return db.alpha.join({
+        beta: true
+      }).find({
+        'alpha.id >': 1
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+        }, {
+          id: 3, val: 'three', beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('does a basic inner join with just a string', function () {
+      return db.alpha.join('beta').find({
+        'alpha.id >': 1
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+        }, {
+          id: 3, val: 'three', beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('shortcuts criteria keys without path info to the primary table', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        id: 3
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3, val: 'three',
+          beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('shortcuts ordering keys without path info to the primary table', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id': 3
+      }, {
+        order: [{field: 'val', direction: 'desc'}],
+        build: true
+      }).then(result => {
+        assert.equal(result.sql, [
+          'SELECT "alpha"."id" AS "alpha__id",',
+          '"alpha"."val" AS "alpha__val",',
+          '"beta"."alpha_id" AS "beta__alpha_id",',
+          '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
+          'FROM "alpha" ',
+          'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
+          'WHERE "alpha"."id" = $1 ',
+          'ORDER BY "alpha"."val" DESC'
+        ].join(''));
+        assert.deepEqual(result.params, [3]);
+      });
+    });
+  });
+
+  describe('autogenerating based on foreign keys', function () {
+    it('autogenerates keys when one possible join fk matches', function () {
+      return db.alpha.join({
+        beta: {type: 'INNER'}
+      }).find({
+        'alpha.id': 3
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3,
+          val: 'three',
+          beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+
+    it('autogenerates keys when one possible origin fk matches', function () {
+      return db.beta.join({
+        alpha: {type: 'INNER'}
+      }).find({
+        'alpha.id': 3
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3, alpha_id: 3, val: 'alpha three',
+          alpha: [{
+            id: 3,
+            val: 'three'
+          }]
+        }, {
+          id: 4, alpha_id: 3, val: 'alpha three again',
+          alpha: [{
+            id: 3,
+            val: 'three'
+          }]
+        }]);
+      });
+    });
+
+    it('autogenerates keys deeper in the join tree', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          gamma: {
+            type: 'INNER'
+          }
+        }
+      }).find({
+        'alpha.id >': 1
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2, val: 'two',
+          beta: [{
+            id: 2, alpha_id: 2, val: 'alpha two',
+            gamma: [{
+              id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2,
+              val: 'alpha two alpha two beta two'
+            }, {
+              id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3,
+              val: 'alpha two alpha three beta two again'
+            }]
+          }]
+        }, {
+          id: 3, val: 'three',
+          beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three',
+            gamma: [{
+              id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null,
+              val: 'alpha two (alpha null) beta three'
+            }]
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again',
+            gamma: [{
+              id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1,
+              val: 'alpha three alpha one beta four'
+            }]
+          }]
+        }]);
+      });
+    });
+
+    it('errors if keys are not specified and there are no possible fks', function () {
+      assert.throws(() => db.beta.join({
+        'sch.epsilon': {type: 'INNER'}
+      }), 'An explicit \'on\' mapping is required for sch.epsilon.');
+    });
+
+    it('errors if keys are not specified and multiple possible fks match', function () {
+      assert.throws(() => db.gamma.join({
+        alpha: {type: 'INNER'}
+      }), 'Ambiguous foreign keys for alpha. Define join keys explicitly.');
+    });
+  });
+
+  describe('options', function () {
+    it('applies options', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id': 3
+      }, {build: true}).then(result => {
+        assert.equal(result.sql, [
+        'SELECT "alpha"."id" AS "alpha__id",',
+          '"alpha"."val" AS "alpha__val",',
+          '"beta"."alpha_id" AS "beta__alpha_id",',
+          '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
+          'FROM "alpha" ',
+          'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
+          'WHERE "alpha"."id" = $1'
+      ].join(''));
+        assert.deepEqual(result.params, [3]);
+      });
+    });
+
+    it('sorts by fields in a joined relation', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id >': 1
+      }, {
+        build: false,
+        order: [{field: 'beta.val'}]
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3, val: 'three',
+          beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }, {
+          id: 2, val: 'two',
+          beta: [{
+            id: 2, alpha_id: 2, val: 'alpha two'
+          }]
+        }]);
+      });
+    });
+
+    it('changes the decomposition target type', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'},
+          decomposeTo: 'object'
+        }
+      }).find({
+        'alpha.id': 2
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2,
+          val: 'two',
+          beta: {
+            id: 2, alpha_id: 2, val: 'alpha two'
+          }
+        }]);
+      });
+    });
   });
 
   describe('inserts', function () {
