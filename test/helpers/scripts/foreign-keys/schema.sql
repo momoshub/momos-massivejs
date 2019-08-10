@@ -23,6 +23,16 @@ CREATE TABLE gamma (
   FOREIGN KEY (beta_id) REFERENCES beta(id)
 );
 
+CREATE TABLE zeta (
+  id SERIAL NOT NULL PRIMARY KEY,
+  val TEXT
+);
+
+CREATE TABLE alpha_zeta (
+  alpha_id INT NOT NULL,
+  zeta_id INT NOT NULL
+);
+
 INSERT INTO alpha (val)
 VALUES ('one'), ('two'), ('three'), ('four');
 
@@ -41,6 +51,12 @@ VALUES
   (2, 3, 2, 'alpha two alpha three beta two again'),
   (2, null, 3, 'alpha two (alpha null) beta three'),
   (3, 1, 4, 'alpha three alpha one beta four');
+
+INSERT INTO zeta (val)
+VALUES ('alpha one'), ('alpha one again'), ('alpha two');
+
+INSERT INTO alpha_zeta (alpha_id, zeta_id)
+VALUES (1, 1), (1, 2), (2, 3);
 
 CREATE VIEW beta_view AS SELECT * FROM beta;
 

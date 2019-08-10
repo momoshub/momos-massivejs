@@ -238,6 +238,68 @@ describe('join', function () {
     });
   });
 
+  it('omits a relation from the final result', function () {
+    return db.alpha.join({
+      alpha_zeta: {
+        type: 'LEFT OUTER',
+        pk: ['alpha_id', 'zeta_id'],
+        on: {alpha_id: 'id'},
+        omit: true
+      },
+      zeta: {
+        type: 'LEFT OUTER',
+        on: {id: 'alpha_zeta.zeta_id'}
+      }
+    }).find({
+      'alpha.id': [1, 3]
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 1,
+        val: 'one',
+        zeta: [{
+          id: 1, val: 'alpha one'
+        }, {
+          id: 2, val: 'alpha one again'
+        }]
+      }, {
+        id: 3,
+        val: 'three',
+        zeta: []
+      }]);
+    });
+  });
+
+  it('omits a parent relation from the final result', function () {
+    return db.alpha.join({
+      alpha_zeta: {
+        type: 'LEFT OUTER',
+        pk: ['alpha_id', 'zeta_id'],
+        on: {alpha_id: 'id'},
+        omit: true,
+        zeta: {
+          type: 'LEFT OUTER',
+          on: {id: 'alpha_zeta.zeta_id'}
+        }
+      }
+    }).find({
+      'alpha.id': [1, 3]
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 1,
+        val: 'one',
+        zeta: [{
+          id: 1, val: 'alpha one'
+        }, {
+          id: 2, val: 'alpha one again'
+        }]
+      }, {
+        id: 3,
+        val: 'three',
+        zeta: []
+      }]);
+    });
+  });
+
   it('caches readables', function () {
     db.entityCache = {};
 
@@ -304,6 +366,19 @@ describe('join', function () {
         on: {alpha_id: 'id'}
       }
     }), 'Bad join definition: unknown database entity qwertyuiop.');
+  });
+
+  it('errors if a primary key is missing', function () {
+    assert.throws(() => db.alpha.join({
+      alpha_zeta: {
+        type: 'LEFT OUTER',
+        on: {alpha_id: 'id'}
+      },
+      zeta: {
+        type: 'LEFT OUTER',
+        on: {id: 'alpha_zeta.zeta_id'}
+      }
+    }), 'Missing explicit pk in join definition for alpha_zeta.');
   });
 
   describe('aliasing', function () {
@@ -619,14 +694,14 @@ describe('join', function () {
         'alpha.id': 3
       }, {build: true}).then(result => {
         assert.equal(result.sql, [
-        'SELECT "alpha"."id" AS "alpha__id",',
+          'SELECT "alpha"."id" AS "alpha__id",',
           '"alpha"."val" AS "alpha__val",',
           '"beta"."alpha_id" AS "beta__alpha_id",',
           '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
           'FROM "alpha" ',
           'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
           'WHERE "alpha"."id" = $1'
-      ].join(''));
+        ].join(''));
         assert.deepEqual(result.params, [3]);
       });
     });
