@@ -902,20 +902,42 @@ describe('join', function () {
       });
     });
 
-    it('throws if an update-join includes multiple root-level keys', function () {
-      assert.throws(() => db.alpha.join({
+    it('updates the origin of a table-only join with flat criteria and only one origin reference', function () {
+      return db.alpha.join({
         beta: {
           type: 'INNER',
           on: {alpha_id: 'id'}
         },
         gamma: {
-          on: {alpha_1_id: 'id'}
+          on: {beta_id: 'beta.id'}
+        }
+      }).update({
+        'gamma.id': 3
+      }, {
+        val: 'something further'
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 2,
+          val: 'something further'
+        }]);
+      });
+    });
+
+    it('throws if an update-join has multiple origin references', async function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        },
+        gamma: {
+          on: {beta_id: 'alpha.id'}
         }
       }).update({
         'gamma.id': 3
       }, {
         val: 'something else'
-      }), 'Joins involving more than one other relation joined to the origin are not updatable. Try reconfiguring your join schema with only one root-level join relation, or using SQL.');
+      }).then(() => { assert.fail(); })
+        .catch(err => { assert.equal(err.code, '42P01'); });
     });
   });
 
