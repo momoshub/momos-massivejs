@@ -13,9 +13,9 @@ Here are some of the highlights:
 
 * **Dynamic query generation**: Massive's versatile query builder supports a wide variety of operators, all generated from a simple criteria object.
 * **Low overhead**: An API built from your schema means no model classes to maintain, super-simple bulk operations, and direct access to your tables without any need to create or load entity instances beforehand.
+* **Join what you need, when you need it**: Call [`db.mytable.join()`](https://massivejs.org/docs/prerelease#readablejoin) on any table or view to build a compound entity which handles generating SQL `JOIN` clauses for the same set of query and persistence methods you're already using.
 * **Document storage**: PostgreSQL's JSONB storage type makes it possible to blend relational and document strategies. Massive offers a robust API to simplify working with documents: objects in, objects out, with document metadata managed for you.
-* **Relational awareness**: Massive does not traverse relationships or build model graphs, but [deep inserts](https://massivejs.org/docs/persistence#deep-insert) can create related entities and junctions transactionally, and the [`decompose` option](https://massivejs.org/docs/resultset-decomposition) allows you to map the results of complex views and scripts to nested object trees.
-* **Transactions**: New in v5, use [`db.withTransaction`](https://massivejs.org/docs/tasks-and-transactions) to execute a callback with full Massive API support in a transaction scope, getting a promise which fulfills if it commits or rejects if it rolls back.
+* **Transactions**: Use [`db.withTransaction`](https://massivejs.org/docs/tasks-and-transactions) to execute a callback with full Massive API support in a transaction scope, getting a promise which fulfills if it commits or rejects if it rolls back.
 * **Postgres everything**: Commitment to a single RDBMS lets us use it to its full potential. Massive supports array fields and operations, regular expression matching, foreign tables, materialized views, and more features found in PostgreSQL but not in other databases.
 
 ## Installation
