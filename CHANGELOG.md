@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0-rc.0](https://gitlab.com/dmfay/massive-js/compare/v5.11.2...v6.0.0-rc.0) (2019-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* resultset decomposition now creates descendants as arrays by default. The 'array' decomposition schema element is no longer recognized, and has been replaced by a 'decomposeTo' element. Set this latter to 'object' to create descendants as objects.
+* **deps:** ES6 generators, and versions of Node prior to 7.6, are no longer supported.
+* results used to be implicitly ordered by the relation's primary key, or otherwise by the first column. This is no longer the case; ordering must be specified if it is desired.
+* supporting Readables which target more than one database relation has involved extensive changes to table loading, criteria parsing, and statement generation. These changes are intended to be backwards-compatible, but are marked as a breaking change because they cannot be guaranteed to be so.
+* JSON fields were previously converted to text and sorted alphabetically.
+
+### Bug Fixes
+
+* **deps:** update coveralls and standard-version ([646c22c](https://gitlab.com/dmfay/massive-js/commit/646c22c))
+* empty the entity cache on db.reload() ([2cb7164](https://gitlab.com/dmfay/massive-js/commit/2cb7164))
+* **deps:** update commander to v3 ([8734df4](https://gitlab.com/dmfay/massive-js/commit/8734df4))
+* **deps:** update dependency lodash to v4.17.15 ([e50b613](https://gitlab.com/dmfay/massive-js/commit/e50b613))
+* **deps:** update pg-promise to v9 ([041ebe6](https://gitlab.com/dmfay/massive-js/commit/041ebe6))
+
+
+### Features
+
+* automatically deep insert when targeting a compound Readable ([191f558](https://gitlab.com/dmfay/massive-js/commit/191f558))
+* create compound Readables with Readable.join() ([286efc6](https://gitlab.com/dmfay/massive-js/commit/286efc6))
+* decompose with compound keys ([db1d95e](https://gitlab.com/dmfay/massive-js/commit/db1d95e))
+* open-ended decomposeTo instead of boolean array flag; default to arrays instead of objects ([86e60a0](https://gitlab.com/dmfay/massive-js/commit/86e60a0))
+* preserve type when ordering by JSON fields ([c286e03](https://gitlab.com/dmfay/massive-js/commit/c286e03)), closes [#683](https://gitlab.com/dmfay/massive-js/issues/683)
+* use 'omit' in join schema for relations not wanted in the decomposed output ([3d9ec65](https://gitlab.com/dmfay/massive-js/commit/3d9ec65))
+
+
+* don't add an ORDER BY clause unless explicitly called for ([29e2990](https://gitlab.com/dmfay/massive-js/commit/29e2990))
+
 ### [5.11.2](https://gitlab.com/dmfay/massive-js/compare/v5.11.1...v5.11.2) (2019-07-17)
 
 
