@@ -14,7 +14,7 @@ SELECT * FROM (
   WITH table_columns AS (
     SELECT attrelid, array_agg(DISTINCT attname::text) AS columns
     FROM pg_catalog.pg_attribute
-    WHERE attnum > 0
+    WHERE attnum > 0 AND attisdropped IS FALSE
     GROUP BY attrelid
   ), table_primary_keys AS (
     SELECT tc.table_schema, tc.table_name,

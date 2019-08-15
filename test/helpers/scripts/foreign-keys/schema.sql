@@ -9,8 +9,11 @@ CREATE TABLE beta (
   id SERIAL NOT NULL PRIMARY KEY,
   alpha_id INT,
   val TEXT,
+  val2 TEXT,
   FOREIGN KEY (alpha_id) REFERENCES alpha(id)
 );
+
+ALTER TABLE beta DROP COLUMN val2;
 
 CREATE TABLE gamma (
   id SERIAL NOT NULL PRIMARY KEY,
