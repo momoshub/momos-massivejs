@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0-rc.1](https://gitlab.com/dmfay/massive-js/compare/v6.0.0-rc.0...v6.0.0-rc.1) (2019-08-15)
+
+
+### Bug Fixes
+
+* ignore dropped columns ([8a1136b](https://gitlab.com/dmfay/massive-js/commit/8a1136b))
+
 ## [6.0.0-rc.0](https://gitlab.com/dmfay/massive-js/compare/v5.11.2...v6.0.0-rc.0) (2019-08-13)
 
 
