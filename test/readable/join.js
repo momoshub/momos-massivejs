@@ -330,6 +330,36 @@ describe('join', function () {
     assert.lengthOf(Object.keys(db.entityCache), 2);
   });
 
+  it('allows overriding the decomposition schema', function () {
+    return db.alpha.join({
+      beta: {
+        type: 'INNER',
+        on: {alpha_id: 'id'}
+      }
+    }).find({
+      'alpha.id': 3
+    }, {
+      // strip the 'val' fields
+      decompose: {
+        pk: 'alpha__id',
+        columns: {alpha__id: 'id'},
+        beta: {
+          pk: 'beta__id',
+          columns: {beta__id: 'id', beta__alpha_id: 'alpha_id'}
+        }
+      }
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 3,
+        beta: [{
+          id: 3, alpha_id: 3
+        }, {
+          id: 4, alpha_id: 3
+        }]
+      }]);
+    });
+  });
+
   it('errors when the origin name reappears', function () {
     assert.throws(() => db.alpha.join({
       alpha: {
