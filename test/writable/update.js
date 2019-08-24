@@ -87,22 +87,22 @@ describe('update', function () {
     });
   });
 
-  it('updates a writable view', function* () {
-    yield db.normal_pk.insert({field1: 'alfalfa'});
+  it('updates a writable view', async () => {
+    await db.normal_pk.insert({field1: 'alfalfa'});
 
-    const res = yield db.normal_as.update({field1: 'alfalfa'}, {field1: 'upsilon'});
+    const res = await db.normal_as.update({field1: 'alfalfa'}, {field1: 'upsilon'});
 
     assert.lengthOf(res, 1);
     assert.equal(res[0].field1, 'upsilon');
   });
 
-  it('rejects if not insertable', function* () {
+  it('rejects if not insertable', async () => {
     let caught = false;
 
     try {
       db.normal_pk.insertable = false;
 
-      yield db.normal_pk.update({id: 1}, {field1: 'theta'});
+      await db.normal_pk.update({id: 1}, {field1: 'theta'});
     } catch (err) {
       caught = true;
 

@@ -31,8 +31,8 @@ describe('saveDoc', function () {
       });
     });
 
-    it('updates an existing document with an id', function* () {
-      const doc = yield db.saveDoc('docs', {
+    it('updates an existing document with an id', async () => {
+      const doc = await db.saveDoc('docs', {
         title: 'Alone',
         description: 'yearning in the darkness',
         price: 89.99,
@@ -47,20 +47,20 @@ describe('saveDoc', function () {
 
       doc.title = 'Together!';
 
-      const updated = yield db.saveDoc('docs', doc);
+      const updated = await db.saveDoc('docs', doc);
 
       assert.equal(updated.id, doc.id);
       assert.equal(updated.title, 'Together!');
       assert.isOk(updated.created_at);
       assert.isOk(updated.updated_at);
 
-      const retrieved = yield db.docs.findDoc(doc.id);
+      const retrieved = await db.docs.findDoc(doc.id);
 
       assert.equal(retrieved.title, 'Together!');
     });
 
-    it('pulls metadata off the actual jsonb field', function* () {
-      let doc = yield db.saveDoc('docs', {
+    it('pulls metadata off the actual jsonb field', async () => {
+      let doc = await db.saveDoc('docs', {
         one: 1
       });
 
@@ -71,7 +71,7 @@ describe('saveDoc', function () {
 
       doc.two = 2;
 
-      doc = yield db.saveDoc('docs', doc);
+      doc = await db.saveDoc('docs', doc);
 
       assert.isOk(doc.id);
       assert.isOk(doc.created_at);
@@ -79,15 +79,15 @@ describe('saveDoc', function () {
       assert.equal(doc.one, 1);
       assert.equal(doc.two, 2);
 
-      const row = yield db.docs.findOne(doc.id);
+      const row = await db.docs.findOne(doc.id);
 
       assert.isOk(row);
       assert.deepEqual(row.body, {one: 1, two: 2});
     });
 
-    it('should return a rejected promise for passing in a non-object', function* () {
+    it('should return a rejected promise for passing in a non-object', async () => {
       try {
-        yield db.saveDoc('doctable', [{foo: 'bar'}]);
+        await db.saveDoc('doctable', [{foo: 'bar'}]);
       } catch (e) {
         assert.equal(e.message, 'Please pass in the document for saving as an object. Include the primary key for an UPDATE.');
       }
@@ -95,8 +95,8 @@ describe('saveDoc', function () {
   });
 
   describe('with an existing table in a schema', function () {
-    before(function* () {
-      yield db.createSchema('myschema');
+    before(async () => {
+      await db.createSchema('myschema');
 
       return db.createDocumentTable('myschema.docs');
     });
@@ -114,8 +114,8 @@ describe('saveDoc', function () {
       });
     });
 
-    it('updates an existing document with an id', function* () {
-      const doc = yield db.saveDoc('myschema.docs', {
+    it('updates an existing document with an id', async () => {
+      const doc = await db.saveDoc('myschema.docs', {
         title: 'Alone',
         description: 'yearning in the darkness',
         price: 89.99,
@@ -129,12 +129,12 @@ describe('saveDoc', function () {
 
       doc.title = 'Together!';
 
-      const updated = yield db.saveDoc('myschema.docs', doc);
+      const updated = await db.saveDoc('myschema.docs', doc);
 
       assert.equal(updated.id, doc.id);
       assert.equal(updated.title, 'Together!');
 
-      const retrieved = yield db.myschema.docs.findDoc(doc.id);
+      const retrieved = await db.myschema.docs.findDoc(doc.id);
 
       assert.equal(retrieved.title, 'Together!');
     });
@@ -145,8 +145,8 @@ describe('saveDoc', function () {
   });
 
   describe('without an existing table', function () {
-    it('creates a table if none exists', function* () {
-      const doc = yield db.saveDoc('doggies', {name: 'Fido', age: 10});
+    it('creates a table if none exists', async () => {
+      const doc = await db.saveDoc('doggies', {name: 'Fido', age: 10});
 
       assert.isOk(db.doggies);
       assert.equal(doc.name, 'Fido');
@@ -162,8 +162,8 @@ describe('saveDoc', function () {
       return db.createSchema('myschema');
     });
 
-    it('creates a table if none exists', function* () {
-      const doc = yield db.saveDoc('myschema.doggies', {name: 'Fido', age: 10});
+    it('creates a table if none exists', async () => {
+      const doc = await db.saveDoc('myschema.doggies', {name: 'Fido', age: 10});
 
       assert.isOk(db.doggies);
       assert.equal(doc.name, 'Fido');

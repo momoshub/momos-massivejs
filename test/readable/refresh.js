@@ -11,38 +11,38 @@ describe('refresh', function () {
     return db.instance.$pool.end();
   });
 
-  it('refreshes a materialized view', function* () {
-    const before = yield db.vals_ending_with_e.count({});
+  it('refreshes a materialized view', async () => {
+    const before = await db.vals_ending_with_e.count({});
 
     assert.equal(before, 2);
 
-    yield db.vals.insert({string: 'five'});
+    await db.vals.insert({string: 'five'});
 
-    const afterWithoutRefresh = yield db.vals_ending_with_e.count({});
+    const afterWithoutRefresh = await db.vals_ending_with_e.count({});
 
     assert.equal(afterWithoutRefresh, 2);
 
-    yield db.vals_ending_with_e.refresh();
+    await db.vals_ending_with_e.refresh();
 
-    const afterWithRefresh = yield db.vals_ending_with_e.count({});
+    const afterWithRefresh = await db.vals_ending_with_e.count({});
 
     assert.equal(afterWithRefresh, 3);
   });
 
-  it('refreshes concurrently', function* () {
-    const before = yield db.vals_ending_with_e.count({});
+  it('refreshes concurrently', async () => {
+    const before = await db.vals_ending_with_e.count({});
 
     assert.equal(before, 2);
 
-    yield db.vals.insert({string: 'five'});
+    await db.vals.insert({string: 'five'});
 
-    const afterWithoutRefresh = yield db.vals_ending_with_e.count({});
+    const afterWithoutRefresh = await db.vals_ending_with_e.count({});
 
     assert.equal(afterWithoutRefresh, 2);
 
-    yield db.vals_ending_with_e.refresh(true);
+    await db.vals_ending_with_e.refresh(true);
 
-    const afterWithRefresh = yield db.vals_ending_with_e.count({});
+    const afterWithRefresh = await db.vals_ending_with_e.count({});
 
     assert.equal(afterWithRefresh, 3);
   });

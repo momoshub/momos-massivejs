@@ -24,8 +24,8 @@ describe('dropSchema', function () {
     });
   });
 
-  it('fails if tables exist and cascade is not specified', function* () {
-    yield db.createDocumentTable(`${schemaName}.mydocs`);
+  it('fails if tables exist and cascade is not specified', async () => {
+    await db.createDocumentTable(`${schemaName}.mydocs`);
 
     return db.dropSchema(schemaName, {cascade: false}).catch(err => {
       assert.isOk(err);

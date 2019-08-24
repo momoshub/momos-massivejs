@@ -10,8 +10,8 @@ describe('attaching entities', function () {
     return resetDb('loader').then(instance => db = instance);
   });
 
-  beforeEach(function* () {
-    db = yield db.reload();
+  beforeEach(async () => {
+    db = await db.reload();
   });
 
   after(function () {
@@ -61,7 +61,7 @@ describe('attaching entities', function () {
       assert.isTrue(db.schema_or_table.t1 instanceof Writable);
     });
 
-    it('merges schemas and executables', function* () {
+    it('merges schemas and executables', async () => {
       db.attach(new Writable({
         schema: 'schema_or_function',
         name: 't1',
@@ -82,12 +82,12 @@ describe('attaching entities', function () {
       assert.isFunction(db.schema_or_function);
       assert.isTrue(db.schema_or_function.t1 instanceof Writable);
 
-      const result = yield db.schema_or_function();
+      const result = await db.schema_or_function();
 
       assert.equal(result[0].val, 1);
     });
 
-    it('merges schemas, executables, and tables', function* () {
+    it('merges schemas, executables, and tables', async () => {
       db.attach(new Writable({
         schema: 'three_things',
         name: 't1',
@@ -118,12 +118,12 @@ describe('attaching entities', function () {
       assert.isTrue(db.three_things instanceof Writable);
       assert.isTrue(db.three_things.t1 instanceof Writable);
 
-      const result = yield db.three_things();
+      const result = await db.three_things();
 
       assert.equal(result[0].val, 1);
     });
 
-    it('merges folders and tables', function* () {
+    it('merges folders and tables', async () => {
       db.attach(new Executable({
         name: 'script',
         path: 'folder_or_table.script1',
@@ -152,8 +152,8 @@ describe('attaching entities', function () {
       assert.isTrue(db.folder_or_table instanceof Writable);
       assert.isFunction(db.folder_or_table.find);
 
-      const result1 = yield db.folder_or_table.script1();
-      const result2 = yield db.folder_or_table.subfolder.script2();
+      const result1 = await db.folder_or_table.script1();
+      const result2 = await db.folder_or_table.subfolder.script2();
 
       assert.equal(result1[0].val, 1);
       assert.equal(result2[0].val, 2);
@@ -197,7 +197,7 @@ describe('attaching entities', function () {
       });
     });
 
-    it('merges folders and executables', function* () {
+    it('merges folders and executables', async () => {
       db.attach(new Executable({
         name: 'folder_or_function',
         path: 'folder_or_function',
@@ -217,14 +217,14 @@ describe('attaching entities', function () {
       assert.isFunction(db.folder_or_function);
       assert.isFunction(db.folder_or_function.script);
 
-      const result1 = yield db.folder_or_function();
-      const result2 = yield db.folder_or_function.script();
+      const result1 = await db.folder_or_function();
+      const result2 = await db.folder_or_function.script();
 
       assert.equal(result1[0].val, 1);
       assert.equal(result2[0].val, 2);
     });
 
-    it('merges tables and executables', function* () {
+    it('merges tables and executables', async () => {
       db.attach(new Executable({
         name: 'function_or_table',
         path: 'function_or_table',
@@ -243,8 +243,8 @@ describe('attaching entities', function () {
       assert.isFunction(db.function_or_table);
       assert.isTrue(db.function_or_table instanceof Writable);
 
-      const result1 = yield db.function_or_table();
-      const result2 = yield db.function_or_table.find({}, {build: true});
+      const result1 = await db.function_or_table();
+      const result2 = await db.function_or_table.find({}, {build: true});
 
       assert.equal(result1[0].val, 1);
       assert.deepEqual(result2, {

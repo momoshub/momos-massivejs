@@ -118,40 +118,40 @@ describe('invoke', function () {
       return db.proc_results.destroy({});
     });
 
-    it('invokes a proc with no arguments', function* () {
-      yield db.proc_no_params();
+    it('invokes a proc with no arguments', async () => {
+      await db.proc_no_params();
 
-      const output = yield db.proc_results.find();
+      const output = await db.proc_results.find();
 
       assert.lengthOf(output, 1);
       assert.equal(output[0].name, 'no_params');
       assert.isNull(output[0].val);
     });
 
-    it('invokes a proc with multiple arguments directly', function* () {
-      yield db.proc_with_params(1, 2);
+    it('invokes a proc with multiple arguments directly', async () => {
+      await db.proc_with_params(1, 2);
 
-      const output = yield db.proc_results.find();
+      const output = await db.proc_results.find();
 
       assert.lengthOf(output, 1);
       assert.equal(output[0].name, 'with_params');
       assert.equal(output[0].val, 3);
     });
 
-    it('invokes a simple variadic proc', function* () {
-      yield db.proc_with_variadic_params(1, 2, 1, 2);
+    it('invokes a simple variadic proc', async () => {
+      await db.proc_with_variadic_params(1, 2, 1, 2);
 
-      const output = yield db.proc_results.find();
+      const output = await db.proc_results.find();
 
       assert.lengthOf(output, 1);
       assert.equal(output[0].name, 'with_variadic_params');
       assert.equal(output[0].val, 4);
     });
 
-    it('invokes a variadic proc with earlier arguments', function* () {
-      yield db.proc_with_params_and_variadic_params(10, 2, 1, 2);
+    it('invokes a variadic proc with earlier arguments', async () => {
+      await db.proc_with_params_and_variadic_params(10, 2, 1, 2);
 
-      const output = yield db.proc_results.find();
+      const output = await db.proc_results.find();
 
       assert.lengthOf(output, 1);
       assert.equal(output[0].name, 'with_params_and_variadic_params');

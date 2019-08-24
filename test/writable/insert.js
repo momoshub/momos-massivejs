@@ -135,12 +135,12 @@ describe('insert', function () {
     });
   });
 
-  it('inserts into a view and returns a result outside the scope', function* () {
-    const res = yield db.normal_as.insert({field1: 'pangolin'});
+  it('inserts into a view and returns a result outside the scope', async () => {
+    const res = await db.normal_as.insert({field1: 'pangolin'});
 
     assert.equal(res.field1, 'pangolin');
 
-    const pangolins = yield db.normal_as.count({field1: 'pangolin'});
+    const pangolins = await db.normal_as.count({field1: 'pangolin'});
 
     assert.equal(pangolins, 0);
   });
@@ -168,33 +168,33 @@ describe('insert', function () {
     });
   });
 
-  it('upserts', function* () {
-    const original = yield db.normal_pk.insert({field1: 'zeta'});
-    const beforeCount = yield db.normal_pk.count();
-    const conflict = yield db.normal_pk.insert({
+  it('upserts', async () => {
+    const original = await db.normal_pk.insert({field1: 'zeta'});
+    const beforeCount = await db.normal_pk.count();
+    const conflict = await db.normal_pk.insert({
       id: original.id,
       field1: 'eta'
     }, {
       onConflictUpdate: ['id']
     });
 
-    const afterCount = yield db.normal_pk.count();
+    const afterCount = await db.normal_pk.count();
 
     assert.equal(beforeCount, afterCount);
     assert.equal(conflict.id, original.id);
 
-    const final = yield db.normal_pk.findOne(original.id);
+    const final = await db.normal_pk.findOne(original.id);
 
     assert.equal(final.field1, 'eta');
   });
 
-  it('rejects if not insertable', function* () {
+  it('rejects if not insertable', async () => {
     let caught = false;
 
     try {
       db.normal_pk.insertable = false;
 
-      yield db.normal_pk.insert({field1: 'sixteen'});
+      await db.normal_pk.insert({field1: 'sixteen'});
     } catch (err) {
       caught = true;
 

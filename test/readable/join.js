@@ -996,11 +996,11 @@ describe('join', function () {
       });
     });
 
-    it('runtime errors on out-of-bounds references to the FROM table after USING', function* () {
+    it('runtime errors on out-of-bounds references to the FROM table after USING', async () => {
       let err;
 
       try {
-        yield db.beta.join({
+        await db.beta.join({
           alpha: {
             on: {id: 'alpha_id'},
             gamma: {

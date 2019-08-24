@@ -23,8 +23,8 @@ describe('decomposing results', function () {
     }).then(() => { assert.fail(); }).catch(() => Promise.resolve());
   });
 
-  it('applies a schema to decompose results', function* () {
-    const issues = yield db.everything.find({}, {
+  it('applies a schema to decompose results', async () => {
+    const issues = await db.everything.find({}, {
       order: [{field: 'user_id'}],
       decompose: {
         pk: 'user_id',
@@ -134,8 +134,8 @@ describe('decomposing results', function () {
     });
   });
 
-  it('preserves ordering of query results', function* () {
-    const issues = yield db.everything.find({}, {
+  it('preserves ordering of query results', async () => {
+    const issues = await db.everything.find({}, {
       decompose: {
         pk: 'user_id',
         columns: {

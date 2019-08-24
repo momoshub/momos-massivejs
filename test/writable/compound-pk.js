@@ -33,8 +33,8 @@ describe('compound primary keys', function () {
     });
   });
 
-  it('deep inserts', function* () {
-    const res = yield db.compoundpk.insert({
+  it('deep inserts', async () => {
+    const res = await db.compoundpk.insert({
       key_one: 234,
       key_two: 567,
       value: 'deep insert test',
@@ -52,7 +52,7 @@ describe('compound primary keys', function () {
     assert.equal(res.key_two, 567);
     assert.equal(res.value, 'deep insert test');
 
-    const junction = yield db.junction.findOne({value: 'other side'});
+    const junction = await db.junction.findOne({value: 'other side'});
 
     assert.isOk(junction);
     assert.equal(junction.c_key_one, 234);

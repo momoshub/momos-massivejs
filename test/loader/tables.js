@@ -5,17 +5,17 @@ const loader = require('../../lib/loader/tables');
 describe('tables', function () {
   let db;
 
-  before(function* () {
-    db = yield resetDb('updatables');
+  before(async () => {
+    db = await resetDb('updatables');
   });
 
   after(function () {
     return db.instance.$pool.end();
   });
 
-  it('should query for a list of tables', function* () {
+  it('should query for a list of tables', async () => {
     db.loader = _.defaults({allowedSchemas: '', blacklist: '', exceptions: ''}, db.loader);
-    const tables = yield loader(db);
+    const tables = await loader(db);
 
     assert.isArray(tables);
     assert.lengthOf(tables, 5);
@@ -25,9 +25,9 @@ describe('tables', function () {
     assert.isTrue(tables[0].hasOwnProperty('pk'));
   });
 
-  it('should ignore null keys in the pk property', function* () {
+  it('should ignore null keys in the pk property', async () => {
     db.loader = _.defaults({whitelist: 'no_pk'}, db.loader);
-    const tables = yield loader(db);
+    const tables = await loader(db);
 
     assert.lengthOf(tables, 1);
 

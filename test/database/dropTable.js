@@ -18,10 +18,10 @@ describe('dropTable', function () {
       return db.createDocumentTable(tableName);
     });
 
-    it('removes the table from public schema', function* () {
+    it('removes the table from public schema', async () => {
       assert.isOk(db[tableName]);
 
-      yield db.dropTable(tableName, {cascade: true});
+      await db.dropTable(tableName, {cascade: true});
 
       assert.isUndefined(db[tableName]);
     });
@@ -30,15 +30,15 @@ describe('dropTable', function () {
   describe('with schema', function () {
     const schemaTableName = `${schema}.${tableName}`;
 
-    before(function* () {
-      yield db.createSchema(schema);
-      yield db.createDocumentTable(schemaTableName);
+    before(async () => {
+      await db.createSchema(schema);
+      await db.createDocumentTable(schemaTableName);
     });
 
-    it('removes the table from the specified schema', function* () {
+    it('removes the table from the specified schema', async () => {
       assert.isOk(db[schema][tableName]);
 
-      yield db.dropTable(schemaTableName, {cascade: true});
+      await db.dropTable(schemaTableName, {cascade: true});
 
       assert.isUndefined(db[schema][tableName]);
     });

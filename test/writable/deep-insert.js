@@ -11,8 +11,8 @@ describe('deep insert', function () {
     return db.instance.$pool.end();
   });
 
-  it('is off by default', function* () {
-    const res = yield db.products.insert({
+  it('is off by default', async () => {
+    const res = await db.products.insert({
       name: 'something',
       orders: [{
         product_id: undefined,
@@ -23,13 +23,13 @@ describe('deep insert', function () {
 
     assert.equal(res.name, 'something');
 
-    const orders = yield db.orders.find({product_id: res.id});
+    const orders = await db.orders.find({product_id: res.id});
 
     assert.lengthOf(orders, 0);
   });
 
-  it('inserts a product and an order in one go', function* () {
-    const res = yield db.products.insert({
+  it('inserts a product and an order in one go', async () => {
+    const res = await db.products.insert({
       name: 'something',
       orders: [{
         product_id: undefined,
@@ -42,15 +42,15 @@ describe('deep insert', function () {
 
     assert.equal(res.name, 'something');
 
-    const orders = yield db.orders.find({product_id: res.id});
+    const orders = await db.orders.find({product_id: res.id});
 
     assert.lengthOf(orders, 1);
     assert.equal(orders[0].user_id, 5);
     assert.equal(orders[0].notes, 'deep insert test');
   });
 
-  it('inserts a product and multiple orders in one go', function* () {
-    const res = yield db.products.insert({
+  it('inserts a product and multiple orders in one go', async () => {
+    const res = await db.products.insert({
       name: 'something',
       orders: [{
         product_id: undefined,
@@ -67,7 +67,7 @@ describe('deep insert', function () {
 
     assert.equal(res.name, 'something');
 
-    const orders = yield db.orders.find({product_id: res.id});
+    const orders = await db.orders.find({product_id: res.id});
 
     assert.lengthOf(orders, 2);
 

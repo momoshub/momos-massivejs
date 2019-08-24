@@ -66,15 +66,15 @@ describe('searchDoc', function () {
     });
   });
 
-  it('returns right elements if offset is specified', function* () {
-    const docs = yield db.docs.searchDoc({
+  it('returns right elements if offset is specified', async () => {
+    const docs = await db.docs.searchDoc({
       fields: ['title'],
       term: 'Document'
     }, {
       limit: 2
     });
 
-    const docs2 = yield db.docs.searchDoc({
+    const docs2 = await db.docs.searchDoc({
       fields: ['title'],
       term: 'Document'
     }, {

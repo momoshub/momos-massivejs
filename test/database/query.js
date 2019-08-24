@@ -78,14 +78,14 @@ describe('query', function () {
     });
   });
 
-  it('changes types', function* () {
-    const stringCount = yield db.query('select count(*) from products');
+  it('changes types', async () => {
+    const stringCount = await db.query('select count(*) from products');
 
     assert.typeOf(stringCount[0].count, 'string');
 
     types.setTypeParser(20, parseInt);
 
-    const intCount = yield db.query('select count(*) from products');
+    const intCount = await db.query('select count(*) from products');
 
     assert.typeOf(intCount[0].count, 'number');
 

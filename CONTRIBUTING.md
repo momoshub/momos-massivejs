@@ -29,7 +29,7 @@ Pull requests **in general** should not cause any new test or lint failures. Con
 
 ### Testing
 
-Massive uses [Mocha](https://mochajs.org/) and [Chai](http://chaijs.com/) to test. Test cases which invoke asynchronous functions can use [co-mocha](https://github.com/blakeembrey/co-mocha) generators to `yield` the async calls.
+Massive uses [Mocha](https://mochajs.org/) and [Chai](http://chaijs.com/) to test.
 
 To run the tests, you will need to have Postgres (>=9.5) running. If you have Docker installed, you can `docker run dmfay/pg-massive` instead to spin up a Postgres container with everything set up for you. Otherwise, ensure that the `postgres` superuser has `trust` authentication enabled for local ipv4 connections in your `pg_hba.conf`, and create an empty `massive` database:
 

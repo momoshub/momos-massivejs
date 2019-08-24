@@ -24,23 +24,23 @@ describe('initialization', function () {
     assert.isTrue(proc.isVariadic);
   });
 
-  it('handles casing and schema', function* () {
+  it('handles casing and schema', async () => {
     let res;
 
     assert.isOk(db.get_number);
-    res = yield db.get_number();
+    res = await db.get_number();
     assert.equal(res, 1);
 
     assert.isOk(db.GetNumber);
-    res = yield db.GetNumber(); // eslint-disable-line new-cap
+    res = await db.GetNumber(); // eslint-disable-line new-cap
     assert.equal(res, 2);
 
     assert.isOk(db.one.get_number);
-    res = yield db.one.get_number();
+    res = await db.one.get_number();
     assert.equal(res, 3);
 
     assert.isOk(db.one.GetNumber);
-    res = yield db.one.GetNumber(); // eslint-disable-line new-cap
+    res = await db.one.GetNumber(); // eslint-disable-line new-cap
     assert.equal(res, 4);
   });
 

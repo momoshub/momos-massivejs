@@ -1,7 +1,5 @@
 'use strict';
 
-require('co-mocha');
-
 describe('save', function () {
   let db;
 

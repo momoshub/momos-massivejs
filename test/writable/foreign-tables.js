@@ -19,10 +19,10 @@ describe('foreign tables', function () {
     return db.foreigntable.find({}).then(res => assert.equal(res.length, 0));
   });
 
-  it('sees updated information in foreign tables', function* () {
-    yield db.t1.insert({id: 1});
+  it('sees updated information in foreign tables', async () => {
+    await db.t1.insert({id: 1});
 
-    const res = yield db.foreigntable.find({});
+    const res = await db.foreigntable.find({});
 
     assert.equal(res.length, 1);
     assert.equal(res[0].id, 1);

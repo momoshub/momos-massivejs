@@ -10,8 +10,8 @@ describe('detaching entities', function () {
     return resetDb('loader').then(instance => db = instance);
   });
 
-  beforeEach(function* () {
-    db = yield db.reload();
+  beforeEach(async () => {
+    db = await db.reload();
   });
 
   after(function () {

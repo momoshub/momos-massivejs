@@ -1,7 +1,5 @@
 'use strict';
 
-require('co-mocha');
-
 const path = require('path');
 
 global._ = require('lodash');

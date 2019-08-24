@@ -5,16 +5,16 @@ const loader = require('../../lib/loader/functions');
 describe('functions', function () {
   let db;
 
-  before(function* () {
-    db = yield resetDb('functions');
+  before(async () => {
+    db = await resetDb('functions');
   });
 
   after(function () {
     return db.instance.$pool.end();
   });
 
-  it('should query for a list of functions and procedures', function* () {
-    const functions = yield loader(db);
+  it('should query for a list of functions and procedures', async () => {
+    const functions = await loader(db);
 
     assert.isArray(functions);
     assert.isTrue(functions.length > 0);
@@ -37,8 +37,8 @@ describe('functions', function () {
       db.serverVersion = realServerVersion;
     });
 
-    it('should not recognize procs if the server is too old', function* () {
-      const functions = yield loader(db);
+    it('should not recognize procs if the server is too old', async () => {
+      const functions = await loader(db);
 
       assert.isArray(functions);
       assert.isTrue(functions.length > 0);

@@ -31,11 +31,11 @@ describe('find', function () {
       });
     });
 
-    it('finds by a string/uuid key and returns a result object', function* () {
-      const order = yield db.orders.findOne();
+    it('finds by a string/uuid key and returns a result object', async () => {
+      const order = await db.orders.findOne();
       assert.isOk(order);
 
-      const res = yield db.orders.find(order.id);
+      const res = await db.orders.find(order.id);
       assert.equal(res.id, order.id);
     });
 
@@ -45,9 +45,9 @@ describe('find', function () {
       });
     });
 
-    it('finds a doc by a uuid primary key', function* () {
-      const row = yield db.uuid_docs.findOne();
-      const doc = yield db.uuid_docs.find(row.id, {document: true});
+    it('finds a doc by a uuid primary key', async () => {
+      const row = await db.uuid_docs.findOne();
+      const doc = await db.uuid_docs.find(row.id, {document: true});
 
       assert.equal(doc.id, row.id);
     });
@@ -482,8 +482,8 @@ describe('find', function () {
       ).then(res => assert.lengthOf(res, 1));
     });
 
-    it('returns users with a complex order by', function* () {
-      const res = yield db.Users.find({}, {
+    it('returns users with a complex order by', async () => {
+      const res = await db.Users.find({}, {
         order: [
           {field: '"Email"', direction: 'asc'},
           {field: '"Id"', direction: 'desc'}

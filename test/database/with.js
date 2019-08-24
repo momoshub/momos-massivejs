@@ -1,7 +1,5 @@
 'use strict';
 
-const co = require('co');
-
 describe('transactions', function () {
   let db;
 
@@ -104,27 +102,19 @@ describe('transactions', function () {
 
   describe('withTransaction', function () {
     it('runs queries in transactions', function () {
-      return db.withTransaction(tx => {
-        let promise = tx.products.insert({string: 'alpha'});
+      return db.withTransaction(async tx => {
+        const record = await tx.products.insert({string: 'alpha'});
 
-        promise = promise.then(record => {
-          assert.isOk(record);
-          assert.isTrue(record.id > 0);
-          assert.equal(record.string, 'alpha');
+        assert.isOk(record);
+        assert.isTrue(record.id > 0);
+        assert.equal(record.string, 'alpha');
 
-          return tx.products.save({id: record.id, description: 'test'});
-        });
-
-        return promise;
+        return tx.products.save({id: record.id, description: 'test'});
       }).then(record => {
         assert.isOk(record);
         assert.isTrue(record.id > 0);
         assert.equal(record.string, 'alpha');
         assert.equal(record.description, 'test');
-
-        return db.products.find(record.id).then(persisted => {
-          assert.isOk(persisted);
-        });
       });
     });
 
@@ -185,12 +175,12 @@ describe('transactions', function () {
     });
 
     it('reloads and applies DDL', function () {
-      return db.withTransaction(co.wrap(function* (tx) {
-        yield tx.query('create table test1 (id serial not null primary key, val text not null)');
+      return db.withTransaction(async tx => {
+        await tx.query('create table test1 (id serial not null primary key, val text not null)');
 
-        tx = yield tx.reload();
+        tx = await tx.reload();
 
-        const record = yield tx.test1.insert({val: 'hi!'});
+        const record = await tx.test1.insert({val: 'hi!'});
 
         assert.isOk(record);
         assert.isTrue(record.id > 0);
@@ -199,29 +189,29 @@ describe('transactions', function () {
         mode: new db.pgp.txMode.TransactionMode({
           tiLevel: db.pgp.txMode.isolationLevel.serializable
         })
-      }));
+      });
     });
 
     it('rolls back DDL', function () {
-      return db.withTransaction(co.wrap(function* (tx) {
-        yield tx.query('create table test2 (id serial not null primary key, val text not null)');
+      return db.withTransaction(async tx => {
+        await tx.query('create table test2 (id serial not null primary key, val text not null)');
 
-        tx = yield tx.reload();
+        tx = await tx.reload();
 
-        yield tx.test2.insert({val: null});
+        await tx.test2.insert({val: null});
       }, {
         mode: new db.pgp.txMode.TransactionMode({
           tiLevel: db.pgp.txMode.isolationLevel.serializable
         })
-      }))
+      })
         .then(() => { assert.fail(); })
-        .catch(co.wrap(function* (err) {
+        .catch(async err => {
           assert.isOk(err);
 
-          db = yield db.reload();
+          db = await db.reload();
 
           assert.notInclude(db.listTables(), 'test2');
-        }));
+        });
     });
 
     it('rolls back if anything rejects', function () {

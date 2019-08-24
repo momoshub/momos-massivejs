@@ -3,11 +3,11 @@
 describe('reload', function () {
   let db;
 
-  before(function* () {
-    const initDb = yield resetDb('foreign-keys');
+  before(async () => {
+    const initDb = await resetDb('foreign-keys');
 
     // reconnect with a pool size of 1 to make it easier to change runtime settings on all connections
-    db = yield massive({
+    db = await massive({
       host: global.host,
       user: 'postgres',
       database: 'massive',
@@ -15,7 +15,7 @@ describe('reload', function () {
     }, massive.loader);
 
     // close original connection
-    yield initDb.instance.$pool.end();
+    await initDb.instance.$pool.end();
   });
 
   after(() => db.instance.$pool.end());

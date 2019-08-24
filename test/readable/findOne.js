@@ -25,11 +25,11 @@ describe('findOne', function () {
       });
     });
 
-    it('findOnes by a string/uuid key and returns a result object', function* () {
-      const order = yield db.orders.findOne();
+    it('findOnes by a string/uuid key and returns a result object', async () => {
+      const order = await db.orders.findOne();
       assert.isOk(order);
 
-      const res = yield db.orders.findOne(order.id);
+      const res = await db.orders.findOne(order.id);
       assert.equal(res.id, order.id);
     });
   });

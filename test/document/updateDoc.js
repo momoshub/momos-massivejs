@@ -28,10 +28,10 @@ describe('updateDoc', function () {
     });
   });
 
-  it('updates the search vector', function* () {
-    yield db.docs.updateDoc(newDoc.id, {field: 'value', nested: {something: 'else'}});
+  it('updates the search vector', async () => {
+    await db.docs.updateDoc(newDoc.id, {field: 'value', nested: {something: 'else'}});
 
-    const record = yield db.docs.findOne(newDoc.id);
+    const record = await db.docs.findOne(newDoc.id);
 
     assert.isOk(record.search);
   });
@@ -42,8 +42,8 @@ describe('updateDoc', function () {
     });
   });
 
-  it('does not set explicit undefined', function* () {
-    const doc = yield db.docs.updateDoc(newDoc.id, {foo: undefined});
+  it('does not set explicit undefined', async () => {
+    const doc = await db.docs.updateDoc(newDoc.id, {foo: undefined});
 
     assert.isDefined(doc.foo);
   });

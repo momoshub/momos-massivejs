@@ -44,48 +44,48 @@ describe('createDocumentTable', function () {
       return db.dropExtension('uuid-ossp');
     });
 
-    it('creates a table with a v4 UUID primary key on public schema', function* () {
+    it('creates a table with a v4 UUID primary key on public schema', async () => {
       global.loader.documentPkType = 'uuid';
       global.loader.uuidVersion = 'v4';
 
-      yield db.createDocumentTable(tableName);
+      await db.createDocumentTable(tableName);
 
-      const doc = yield db[tableName].saveDoc({one: 'two'});
+      const doc = await db[tableName].saveDoc({one: 'two'});
 
       assert.isOk(doc.id);
       assert.match(doc.id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'valid uuid format');
     });
 
-    it('defaults to v4 if no uuidVersion is specified', function* () {
+    it('defaults to v4 if no uuidVersion is specified', async () => {
       global.loader.documentPkType = 'uuid';
 
-      yield db.createDocumentTable(tableName);
+      await db.createDocumentTable(tableName);
 
-      const doc = yield db[tableName].saveDoc({one: 'two'});
+      const doc = await db[tableName].saveDoc({one: 'two'});
 
       assert.isOk(doc.id);
       assert.match(doc.id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'valid uuid format');
     });
 
-    it('creates a table with a v1 UUID primary key on public schema', function* () {
+    it('creates a table with a v1 UUID primary key on public schema', async () => {
       global.loader.documentPkType = 'uuid';
       global.loader.uuidVersion = 'v1';
 
-      yield db.createDocumentTable(tableName);
+      await db.createDocumentTable(tableName);
 
-      const doc = yield db[tableName].saveDoc({one: 'two'});
+      const doc = await db[tableName].saveDoc({one: 'two'});
 
       assert.isOk(doc.id);
       assert.match(doc.id, /^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'valid uuid format');
     });
 
-    it('creates a table with a v1mc UUID primary key on public schema', function* () {
+    it('creates a table with a v1mc UUID primary key on public schema', async () => {
       global.loader.documentPkType = 'uuid';
       global.loader.uuidVersion = 'v1mc';
 
-      yield db.createDocumentTable(tableName);
+      await db.createDocumentTable(tableName);
 
-      const doc = yield db[tableName].saveDoc({one: 'two'});
+      const doc = await db[tableName].saveDoc({one: 'two'});
 
       assert.isOk(doc.id);
       assert.match(doc.id, /^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'valid uuid format');

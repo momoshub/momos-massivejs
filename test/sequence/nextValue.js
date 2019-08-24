@@ -11,9 +11,9 @@ describe('nextValue', function () {
     return db.instance.$pool.end();
   });
 
-  it('gets the next value for a sequence', function* () {
-    const lastValue = yield db.one_counter.lastValue();
-    const nextValue = yield db.one_counter.nextValue();
+  it('gets the next value for a sequence', async () => {
+    const lastValue = await db.one_counter.lastValue();
+    const nextValue = await db.one_counter.nextValue();
 
     assert.isAbove(Number(nextValue), Number(lastValue));
   });

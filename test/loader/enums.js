@@ -15,14 +15,14 @@ describe('enums', function () {
     assert.sameMembers(db.enums.myenum, ['one', 'two', 'three']);
   });
 
-  it('requires reload to see new values', function* () {
+  it('requires reload to see new values', async () => {
     assert.sameMembers(db.enums.myenum, ['one', 'two', 'three']);
 
-    yield db.query('ALTER TYPE myenum ADD VALUE \'four\';');
+    await db.query('ALTER TYPE myenum ADD VALUE \'four\';');
 
     assert.sameMembers(db.enums.myenum, ['one', 'two', 'three']);
 
-    yield db.reload();
+    await db.reload();
 
     assert.sameMembers(db.enums.myenum, ['one', 'two', 'three', 'four']);
   });

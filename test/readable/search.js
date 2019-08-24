@@ -3,8 +3,8 @@
 describe('search', function () {
   let db;
 
-  before(function* () {
-    db = yield resetDb('data-products-users');
+  before(async () => {
+    db = await resetDb('data-products-users');
   });
 
   after(function () {
@@ -47,9 +47,9 @@ describe('search', function () {
     });
   });
 
-  it('returns same correct element when offset is set', function* () {
-    const one = yield db.products.search({fields: ['Name', 'description'], term: 'description'});
-    const two = yield db.products.search({fields: ['Name', 'description'], term: 'description'}, {offset: 1});
+  it('returns same correct element when offset is set', async () => {
+    const one = await db.products.search({fields: ['Name', 'description'], term: 'description'});
+    const two = await db.products.search({fields: ['Name', 'description'], term: 'description'}, {offset: 1});
 
     assert.equal(one[1].id, two[0].id);
   });
