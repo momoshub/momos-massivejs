@@ -108,7 +108,7 @@ describe('update', function () {
 
       assert.equal(err.message, 'normal_pk is not writable');
     } finally {
-      db.normal_pk.insertable = true;
+      db.normal_pk.insertable = true; // eslint-disable-line require-atomic-updates
 
       if (!caught) {
         assert.fail();

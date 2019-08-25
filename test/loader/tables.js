@@ -19,10 +19,10 @@ describe('tables', function () {
 
     assert.isArray(tables);
     assert.lengthOf(tables, 5);
-    assert.isTrue(tables[0].hasOwnProperty('schema'));
-    assert.isTrue(tables[0].hasOwnProperty('name'));
-    assert.isTrue(tables[0].hasOwnProperty('parent'));
-    assert.isTrue(tables[0].hasOwnProperty('pk'));
+    assert.property(tables[0], 'schema');
+    assert.property(tables[0], 'name');
+    assert.property(tables[0], 'parent');
+    assert.property(tables[0], 'pk');
   });
 
   it('should ignore null keys in the pk property', async () => {

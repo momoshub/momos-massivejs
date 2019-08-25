@@ -14,9 +14,9 @@ describe('compound primary keys', function () {
   it('finds', function () {
     return db.compoundpk.findOne().then(res => {
       assert.isOk(res);
-      assert.isTrue(res.hasOwnProperty('key_one'));
-      assert.isTrue(res.hasOwnProperty('key_two'));
-      assert.isTrue(res.hasOwnProperty('value'));
+      assert.property(res, 'key_one');
+      assert.property(res, 'key_two');
+      assert.property(res, 'value');
     });
   });
 

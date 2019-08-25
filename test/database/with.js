@@ -208,7 +208,7 @@ describe('transactions', function () {
         .catch(async err => {
           assert.isOk(err);
 
-          db = await db.reload();
+          await db.reload();
 
           assert.notInclude(db.listTables(), 'test2');
         });

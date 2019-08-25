@@ -24,8 +24,8 @@ describe('views', function () {
 
     assert.isArray(views);
     assert.lengthOf(views, 2);
-    assert.isTrue(views[0].hasOwnProperty('schema'));
-    assert.isTrue(views[0].hasOwnProperty('name'));
+    assert.property(views[0], 'schema');
+    assert.property(views[0], 'name');
     assert.deepEqual(views.map(v => v.name).sort(), [
       'vals_ending_with_e',
       'vals_starting_with_t'
@@ -56,8 +56,8 @@ describe('views', function () {
 
       assert.isArray(views);
       assert.lengthOf(views, 1);
-      assert.isTrue(views[0].hasOwnProperty('schema'));
-      assert.isTrue(views[0].hasOwnProperty('name'));
+      assert.property(views[0], 'schema');
+      assert.property(views[0], 'name');
       assert.equal(views[0].name, 'vals_starting_with_t');
     });
   });
@@ -74,8 +74,8 @@ describe('views', function () {
 
     assert.isArray(views);
     assert.lengthOf(views, 1);
-    assert.isTrue(views[0].hasOwnProperty('schema'));
-    assert.isTrue(views[0].hasOwnProperty('name'));
+    assert.property(views[0], 'schema');
+    assert.property(views[0], 'name');
     assert.equal(views[0].name, 'vals_starting_with_t');
   });
 });

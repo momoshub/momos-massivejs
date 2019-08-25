@@ -25,7 +25,7 @@ describe('Table Inheritance', function () {
         const okc = res.filter(function (c) { return c.name === 'Oklahoma City'; })[0];
 
         assert(okc);
-        assert.equal(okc.hasOwnProperty('of_state'), false);
+        assert.notProperty(okc, 'of_state');
       });
     });
 
@@ -36,14 +36,14 @@ describe('Table Inheritance', function () {
     });
 
     it('does load descendant tables', function () {
-      assert.equal(db.hasOwnProperty('capitals'), true);
+      assert.property(db, 'capitals');
     });
 
     it('descendant table rows', function () {
       return db.capitals.find().then(res => {
         assert.equal(res.length, 4);
 
-        assert.equal(res[0].hasOwnProperty('of_state'), true);
+        assert.property(res[0], 'of_state');
       });
     });
   });

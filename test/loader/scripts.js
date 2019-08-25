@@ -21,9 +21,9 @@ describe('scripts', function () {
 
     assert.isArray(scripts);
     assert.lengthOf(scripts, 1);
-    assert.isTrue(scripts[0].hasOwnProperty('name'));
-    assert.isTrue(scripts[0].hasOwnProperty('schema'));
-    assert.isTrue(scripts[0].hasOwnProperty('sql'));
+    assert.property(scripts[0], 'name');
+    assert.property(scripts[0], 'schema');
+    assert.property(scripts[0], 'sql');
     assert.instanceOf(scripts[0].sql, pgp.QueryFile);
   });
 });

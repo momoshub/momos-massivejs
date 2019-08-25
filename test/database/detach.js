@@ -11,7 +11,7 @@ describe('detaching entities', function () {
   });
 
   beforeEach(async () => {
-    db = await db.reload();
+    await db.reload();
   });
 
   after(function () {

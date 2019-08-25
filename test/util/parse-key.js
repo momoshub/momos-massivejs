@@ -10,7 +10,8 @@ describe('parseKey', function () {
     entityCache: {}
   };
 
-  db.mytable = new Writable({ // only Writables have pks and we need to test joins
+  // only Writables have pks and we need to test joins
+  db.mytable = new Writable({
     name: 'mytable',
     schema: 'public',
     columns: ['id', 'field', 'col1', 'col2', 'body'],

@@ -20,7 +20,7 @@ describe('sequences', function () {
 
     assert.isArray(sequences);
     assert.lengthOf(sequences, 2);
-    assert.isTrue(sequences[0].hasOwnProperty('schema'));
-    assert.isTrue(sequences[0].hasOwnProperty('name'));
+    assert.property(sequences[0], 'schema');
+    assert.property(sequences[0], 'name');
   });
 });
