@@ -55,6 +55,36 @@ describe('deep insert', function () {
       orders: [{
         product_id: undefined,
         user_id: 5,
+        notes: 'deep insert test 1',
+        shipped: true
+      }, {
+        user_id: 6,
+        product_id: undefined,
+        notes: 'deep insert test 2'
+      }]
+    }, {
+      deepInsert: true
+    });
+
+    assert.equal(res.name, 'something');
+
+    const orders = await db.orders.find({product_id: res.id});
+
+    assert.lengthOf(orders, 2);
+
+    const order1 = orders.find(o => o.user_id === 5);
+    assert.equal(order1.notes, 'deep insert test 1');
+
+    const order2 = orders.find(o => o.user_id === 6);
+    assert.equal(order2.notes, 'deep insert test 2');
+  });
+
+  it('collates missing and reordered fields', async () => {
+    const res = await db.products.insert({
+      name: 'something',
+      orders: [{
+        product_id: undefined,
+        user_id: 5,
         notes: 'deep insert test 1'
       }, {
         product_id: undefined,

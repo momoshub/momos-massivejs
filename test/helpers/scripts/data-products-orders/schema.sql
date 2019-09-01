@@ -18,6 +18,7 @@ CREATE TABLE orders(
   product_id INT,
   user_id INT,
   notes CHARACTER VARYING(255),
+  shipped BOOLEAN NOT NULL DEFAULT FALSE,
   ordered_at DATE DEFAULT now() NOT NULL
 );
 
