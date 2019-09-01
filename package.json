@@ -49,7 +49,7 @@
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "commander": "3.0.0",
+    "commander": "3.0.1",
     "glob": "7.1.4",
     "lodash": "4.17.15",
     "murmurhash": "0.0.2",
