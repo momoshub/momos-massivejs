@@ -15,6 +15,10 @@ describe('where', function () {
     return db.products.where('id=$1 OR id=$2', [1, 2]).then(res => assert.lengthOf(res, 2));
   });
 
+  it('executes a handwritten WHERE clause without parameters', function () {
+    return db.products.where('id=1').then(res => assert.lengthOf(res, 1));
+  });
+
   it('executes a handwritten WHERE clause with options', function () {
     return db.products.where('id=$1 OR id=$2', [1, 2], {order: [{field: 'id', direction: 'desc'}]}).then(res => {
       assert.lengthOf(res, 2);

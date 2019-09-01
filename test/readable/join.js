@@ -330,6 +330,25 @@ describe('join', function () {
     assert.lengthOf(Object.keys(db.entityCache), 2);
   });
 
+  it('manages the options param index for where', function () {
+    return db.alpha.join({
+      beta: {
+        type: 'INNER',
+        on: {alpha_id: 'id'}
+      }
+    }).where('alpha.id < $1', [4], {offset: 2}).then(result => {
+      assert.deepEqual(result, [{
+        id: 3,
+        val: 'three',
+        beta: [{
+          id: 3, alpha_id: 3, val: 'alpha three'
+        }, {
+          id: 4, alpha_id: 3, val: 'alpha three again'
+        }]
+      }]);
+    });
+  });
+
   it('allows overriding the decomposition schema', function () {
     return db.alpha.join({
       beta: {
