@@ -804,6 +804,30 @@ describe('join', function () {
     });
   });
 
+  describe('searches', function () {
+    it('joins a relation with a type and keys', function () {
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).search({
+        fields: ['alpha.val', 'beta.val'],
+        term: 'three'
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 3,
+          val: 'three',
+          beta: [{
+            id: 3, alpha_id: 3, val: 'alpha three'
+          }, {
+            id: 4, alpha_id: 3, val: 'alpha three again'
+          }]
+        }]);
+      });
+    });
+  });
+
   describe('inserts', function () {
     it('inserts the origin of a table-only join', function () {
       return db.alpha.join({

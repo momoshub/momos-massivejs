@@ -35,4 +35,30 @@ describe('where', function () {
   it('uses named parameters', function () {
     return db.products.where('id=${id}', {id: 1}).then(res => assert.lengthOf(res, 1));
   });
+
+  it('applies ordering options', async function () {
+    const result = await db.products.where('id=$1 OR id=$2', [1, 2], {
+      order: [{field: 'id', direction: 'desc'}]
+    });
+
+    assert.lengthOf(result, 2);
+    assert.equal(result[0].id, 2);
+    assert.equal(result[1].id, 1);
+  });
+
+  it('voids the warranty', async function () {
+    const result = await db.products.where('id=$1 OR id=$2 ORDER BY id DESC NULLS LAST LIMIT 2', [1, 2]);
+
+    assert.lengthOf(result, 2);
+    assert.equal(result[0].id, 2);
+    assert.equal(result[1].id, 1);
+  });
+
+  it('breaks after voiding the warranty', function () {
+    return db.products.where('id=$1 OR id=$2 ORDER BY id DESC NULLS LAST LIMIT 2', [1, 2], {
+      order: [{field: 'id', direction: 'desc', nulls: 'first'}],
+      limit: 2
+    }).then(() => assert.fail())
+      .catch(err => assert.equal(err.code, '42601'));
+  });
 });
