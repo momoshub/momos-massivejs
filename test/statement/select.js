@@ -331,6 +331,11 @@ describe('Select', function () {
       assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
     });
 
+    it('adds DISTINCT', function () {
+      const result = new Select(source, {}, {distinct: true});
+      assert.equal(result.format(), 'SELECT DISTINCT * FROM "mytable" WHERE TRUE');
+    });
+
     it('should add an ONLY', function () {
       const result = new Select(source, {}, {only: true});
       assert.equal(result.format(), 'SELECT * FROM ONLY "mytable" WHERE TRUE');
