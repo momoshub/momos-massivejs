@@ -15,7 +15,7 @@ describe('reload', function () {
     }, massive.loader);
 
     // close original connection
-    await initDb.instance.$pool.end();
+    initDb.instance.$pool.end();
   });
 
   after(() => db.instance.$pool.end());
