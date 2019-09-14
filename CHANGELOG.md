@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://gitlab.com/dmfay/massive-js/compare/v6.0.0...v6.1.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v3.0.1 ([a0698df](https://gitlab.com/dmfay/massive-js/commit/a0698df))
+* **deps:** update dependency pg-promise to v9.1.2 ([822b5a4](https://gitlab.com/dmfay/massive-js/commit/822b5a4))
+* **deps:** update dependency pg-promise to v9.1.4 ([e44e54f](https://gitlab.com/dmfay/massive-js/commit/e44e54f))
+
+
+### Features
+
+* select distinct ([bd9fcf7](https://gitlab.com/dmfay/massive-js/commit/bd9fcf7))
+
 ## [6.0.0](https://gitlab.com/dmfay/massive-js/compare/v5.11.2...v6.0.0) (2019-09-01)
 
 
