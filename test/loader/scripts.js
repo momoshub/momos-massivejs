@@ -20,7 +20,7 @@ describe('scripts', function () {
     const scripts = await loader(db);
 
     assert.isArray(scripts);
-    assert.lengthOf(scripts, 1);
+    assert.lengthOf(scripts, 2);
     assert.property(scripts[0], 'name');
     assert.property(scripts[0], 'schema');
     assert.property(scripts[0], 'sql');

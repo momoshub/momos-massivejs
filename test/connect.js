@@ -41,6 +41,32 @@ describe('connecting', function () {
     });
   });
 
+  it('connects twice', async function () {
+    const first = await massive({connectionString}, loader);
+    let second;
+
+    try {
+      await first.query('CREATE USER multiball');
+      await first.query('GRANT SELECT ON t1 TO multiball');
+
+      second = await massive({
+        connectionString: `postgres://multiball@${global.host}/massive`
+      }, loader);
+
+      assert.notEqual(first, second);
+      assert.isFunction(first.fn);
+      assert.isFunction(second.fn);
+      assert.isAbove(first.listTables().length, second.listTables().length);
+      assert.equal(second.listTables().length, 1);
+    } finally {
+      await first.query('REVOKE SELECT ON t1 FROM multiball');
+      await first.query('DROP USER multiball');
+
+      first.instance.$pool.end();
+      second.instance.$pool.end();
+    }
+  });
+
   it('accepts a receive event option on driver config', function () {
     // eslint-disable-next-line require-jsdoc
     function camelizeColumns (data) {
@@ -138,7 +164,7 @@ describe('connecting', function () {
 
   describe('configuration', function () {
     it('allows undefined scripts directories', function () {
-      const testLoader = _.defaults({}, loader);  // lodash quirk: defaults works, cloneDeep doesn't
+      const testLoader = _.cloneDeep({}, loader);
 
       delete testLoader.scripts;
 
@@ -202,26 +228,20 @@ describe('connecting', function () {
     });
 
     it('loads query files and functions', function () {
-      const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
-        noWarnings: true
-      }, loader);
+      const quietLoader = _.defaults({noWarnings: true}, loader);
 
-      return massive(connectionString, testLoader).then(db => {
+      return massive(connectionString, quietLoader).then(db => {
         assert.isTrue(db.objects.filter(o => o instanceof Executable).length > 1);
-        assert.lengthOf(db.objects.filter(f => f.sql instanceof pgp.QueryFile), 1); // just the schema script
+        assert.lengthOf(db.objects.filter(f => f.sql instanceof pgp.QueryFile), 2); // schema.sql, fn.sql
 
         return db.instance.$pool.end();
       });
     });
 
     it('loads everything it can by default', function () {
-      const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
-        noWarnings: true
-      }, loader);
+      const quietLoader = _.defaults({noWarnings: true}, loader);
 
-      return massive(connectionString, testLoader).then(db => {
+      return massive(connectionString, quietLoader).then(db => {
         assert.isOk(db);
         assert.isOk(db.one);
         assert.isOk(db.two);
@@ -254,7 +274,6 @@ describe('connecting', function () {
 
     it('excludes materialized views', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         noWarnings: true,
         excludeMatViews: true
       }, loader);
@@ -294,7 +313,6 @@ describe('connecting', function () {
   describe('schema filters', function () {
     it('applies filters', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         allowedSchemas: 'one, two',
         noWarnings: true
       }, loader);
@@ -332,7 +350,6 @@ describe('connecting', function () {
 
     it('allows exceptions', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         allowedSchemas: 'two',
         exceptions: 't1, v1, one.v2',
         noWarnings: true
@@ -373,7 +390,6 @@ describe('connecting', function () {
   describe('table blacklists', function () {
     it('applies blacklists to tables and views', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         blacklist: '%1, one.%2',
         noWarnings: true
       }, loader);
@@ -410,7 +426,6 @@ describe('connecting', function () {
 
     it('checks schema names in the pattern', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         blacklist: 'one.%1',
         noWarnings: true
       }, loader);
@@ -448,7 +463,6 @@ describe('connecting', function () {
 
     it('allows exceptions', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         blacklist: '%1',
         exceptions: 'one.%1',
         noWarnings: true
@@ -488,7 +502,6 @@ describe('connecting', function () {
   describe('table whitelists', function () {
     it('applies a whitelist with exact matching', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         whitelist: 't1, one.t1',
         noWarnings: true
       }, loader);
@@ -525,7 +538,6 @@ describe('connecting', function () {
 
     it('overrides other filters', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         allowedSchemas: 'one',
         blacklist: 't1',
         whitelist: 't1',
@@ -566,14 +578,13 @@ describe('connecting', function () {
   describe('function exclusion', function () {
     it('skips loading functions when set', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         excludeFunctions: true,
         noWarnings: true
       }, loader);
 
       return massive(connectionString, testLoader).then(db => {
-        assert.lengthOf(db.objects.filter(o => o instanceof Executable), 1);
-        assert.lengthOf(db.objects.filter(o => o instanceof Executable && o.sql instanceof pgp.QueryFile), 1);
+        assert.lengthOf(db.objects.filter(o => o instanceof Executable), 2);
+        assert.lengthOf(db.objects.filter(o => o instanceof Executable && o.sql instanceof pgp.QueryFile), 2);
 
         return db.instance.$pool.end();
       });
@@ -581,14 +592,13 @@ describe('connecting', function () {
 
     it('loads all functions when false', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         excludeFunctions: false,
         noWarnings: true
       }, loader);
 
       return massive(connectionString, testLoader).then(db => {
-        assert.lengthOf(db.objects.filter(o => o instanceof Executable), 5);
-        assert.lengthOf(db.objects.filter(o => o instanceof Executable && o.sql instanceof pgp.QueryFile), 1);
+        assert.lengthOf(db.objects.filter(o => o instanceof Executable), 6);
+        assert.lengthOf(db.objects.filter(o => o instanceof Executable && o.sql instanceof pgp.QueryFile), 2);
 
         return db.instance.$pool.end();
       });
@@ -598,7 +608,6 @@ describe('connecting', function () {
   describe('function filtering', function () {
     it('blacklists functions', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         functionBlacklist: '%1, one.f2',
         noWarnings: true
       }, loader);
@@ -613,7 +622,6 @@ describe('connecting', function () {
 
     it('whitelists functions', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         functionWhitelist: '%1, one.f2',
         noWarnings: true
       }, loader);
@@ -628,7 +636,6 @@ describe('connecting', function () {
 
     it('applies exceptions', function () {
       const testLoader = _.defaults({
-        scripts: `${__dirname}/helpers/scripts/loader`,
         allowedSchemas: 'one',
         functionBlacklist: 'one.%1',
         exceptions: 'one.f2',

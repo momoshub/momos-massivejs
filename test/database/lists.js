@@ -25,7 +25,7 @@ describe('list functions', function () {
 
   describe('listFunctions', function () {
     it('lists functions', function () {
-      assert.sameMembers(db.listFunctions(), ['f1', 'f2', 'one.f1', 'one.f2', 'schema']);
+      assert.sameMembers(db.listFunctions(), ['f1', 'f2', 'one.f1', 'one.f2', 'schema', 'fn']);
     });
   });
 
