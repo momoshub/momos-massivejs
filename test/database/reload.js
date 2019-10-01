@@ -37,9 +37,13 @@ describe('reload', function () {
   });
 
   // this test case changes the search path and should remain last in the file
-  it('picks up change in current schema', () => {
-    return db.query('SET search_path=sch')
-      .then(() => db.reload())
-      .then(() => assert.equal(db.currentSchema, 'sch'));
+  it('picks up change in current schema', async function () {
+    await db.query('SET search_path=sch');
+
+    await db.reload();
+
+    assert.equal(db.currentSchema, 'sch');
+    assert.isOk(db.delta);
+    assert.isOk(db.public.alpha);
   });
 });
