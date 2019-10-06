@@ -300,20 +300,16 @@ describe('find', function () {
 
   describe('document generator', function () {
     it('finds a doc by title', function () {
-      return db.docs.find({title: 'Document 1'}, {document: true, generator: 'docGenerator'}).then(docs => {
+      return db.docs.find({title: 'Document 1'}, {document: true}).then(docs => {
         assert.equal(docs[0].title, 'Document 1');
       });
     });
 
     it('orders by fields in the table', function () {
-      return db.docs.find(
-        {},
-        {
-          order: [{field: 'id', direction: 'desc'}],
-          document: true,
-          generator: 'docGenerator'
-        }
-      ).then(docs => {
+      return db.docs.find({}, {
+        order: [{field: 'id', direction: 'desc'}],
+        document: true
+      }).then(docs => {
         assert.lengthOf(docs, 4);
         assert.equal(docs[0].id, 4);
         assert.equal(docs[1].id, 3);
@@ -323,14 +319,10 @@ describe('find', function () {
     });
 
     it('orders by literal exprs', function () {
-      return db.docs.find(
-        {},
-        {
-          order: [{expr: 'body->>\'title\'', direction: 'desc'}],
-          document: true,
-          generator: 'docGenerator'
-        }
-      ).then(docs => {
+      return db.docs.find({}, {
+        order: [{expr: 'body->>\'title\'', direction: 'desc'}],
+        document: true
+      }).then(docs => {
         assert.lengthOf(docs, 4);
         assert.equal(docs[0].title, 'Something Else');
         assert.equal(docs[1].title, 'Document 3');
@@ -343,8 +335,7 @@ describe('find', function () {
       return db.docs.find({}, {
         order: [{field: 'title', direction: 'desc', type: 'varchar'}],
         orderBody: true,
-        document: true,
-        generator: 'docGenerator'
+        document: true
       }).then(docs => {
         assert.lengthOf(docs, 4);
         assert.equal(docs[0].title, 'Something Else');
@@ -399,7 +390,7 @@ describe('find', function () {
     });
 
     it('supports options in findOne', function () {
-      return db.products.findOne({}, {order: [{field: 'id', direction: 'desc'}], fields: 'id'}).then(res => {
+      return db.products.findOne({}, {order: [{field: 'id', direction: 'desc'}], fields: ['id']}).then(res => {
         assert.equal(res.id, 4);
         assert.equal(Object.keys(res).length, 1);
       });
@@ -463,7 +454,7 @@ describe('find', function () {
     });
 
     it('returns a single column, when we delimit in the calling code', function () {
-      return db.Users.find({}, {fields: '"Email"'}).then(res => assert.lengthOf(res, 1));
+      return db.Users.find({}, {fields: ['"Email"']}).then(res => assert.lengthOf(res, 1));
     });
 
     it('returns users with a simple order by', function () {

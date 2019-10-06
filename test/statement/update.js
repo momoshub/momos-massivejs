@@ -78,12 +78,12 @@ describe('Update', function () {
     });
 
     it('should build a WHERE clause using the document generator', function () {
-      const result = new Update(source, {field1: 'value1'}, {thing: 1}, {document: true, generator: 'docGenerator'});
+      const result = new Update(source, {field1: 'value1'}, {thing: 1}, {document: true});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1 WHERE "body" @> $2 RETURNING *');
     });
 
     it('should forestall the document generator if the criteria form a pk search', function () {
-      const result = new Update(source, {field1: 'value1'}, {id: 1}, {generator: 'docGenerator'});
+      const result = new Update(source, {field1: 'value1'}, {id: 1}, {document: true});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1 WHERE "id" = $2 RETURNING *');
     });
 

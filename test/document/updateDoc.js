@@ -75,16 +75,23 @@ describe('updateDoc', function () {
   });
 
   it('works with non-document json fields by *row* criteria', function () {
-    return db.products.updateDoc({id: 3}, {appliedCriteria: true}, {body: 'specs'}).then(products => {
+    return db.products.updateDoc({string: 'three'}, {appliedCriteria: true}, {body: 'specs'}).then(products => {
       assert.lengthOf(products, 1);
       assert.isTrue(products[0].specs.appliedCriteria);
     });
   });
 
   it('accepts options', function () {
-    return db.products.updateDoc({id: 2}, {something: 'else'}, {build: true}).then(res => {
+    return db.products.updateDoc({thing: 'stuff'}, {something: 'else'}, {build: true}).then(res => {
       assert.equal(res.sql, 'UPDATE "products" SET "body" = COALESCE("body", \'{}\'::jsonb) || $1 WHERE "body" @> $2 RETURNING *;');
-      assert.deepEqual(res.params, [JSON.stringify({something: 'else'}), JSON.stringify({id: 2})]);
+      assert.deepEqual(res.params, [JSON.stringify({something: 'else'}), JSON.stringify({thing: 'stuff'})]);
+    });
+  });
+
+  it('accepts options for a primary key search', function () {
+    return db.products.updateDoc({id: 2}, {something: 'else'}, {build: true}).then(res => {
+      assert.equal(res.sql, 'UPDATE "products" SET "body" = COALESCE("body", \'{}\'::jsonb) || $1 WHERE "id" = $2 RETURNING *;');
+      assert.deepEqual(res.params, [JSON.stringify({something: 'else'}), 2]);
     });
   });
 });

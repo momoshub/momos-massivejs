@@ -460,7 +460,6 @@ describe('Select', function () {
         const result = new Select(source, {
           col2: 'value2'
         }, {
-          document: true,
           pageLength: 10,
           order: [{
             field: 'col1',
@@ -473,6 +472,25 @@ describe('Select', function () {
         assert.deepEqual(result.params, ['value2', 5]);
         assert.equal(result.pagination, '(("col1")::int) > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE "col2" = $1 AND (("col1")::int) > ($2) ORDER BY ("col1")::int ASC FETCH FIRST 10 ROWS ONLY');
+      });
+
+      it('is compatible with document queries', function () {
+        const result = new Select(source, {
+          col2: 'value2'
+        }, {
+          document: true,
+          pageLength: 10,
+          order: [{
+            field: 'col1',
+            type: 'int',
+            last: 5
+          }]
+        });
+
+        assert.equal(result.conditions, '"body" @> $1');
+        assert.deepEqual(result.params, [JSON.stringify({col2: 'value2'}), 5]);
+        assert.equal(result.pagination, '(("col1")::int) > ($2)');
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE "body" @> $1 AND (("col1")::int) > ($2) ORDER BY ("col1")::int ASC FETCH FIRST 10 ROWS ONLY');
       });
 
       it('requires an order definition', function () {

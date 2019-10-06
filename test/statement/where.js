@@ -61,8 +61,7 @@ describe('WHERE clause generation', function () {
       const result = where(source, {
         conditions: '"field2" @@ lower($1)',
         params: ['value2'],
-        where: {field1: 'value1'},
-        nestedGenerator: 'tableGenerator'
+        where: {field1: 'value1'}
       });
 
       assert.equal(result.conditions, '"field2" @@ lower($1) AND "field1" = $2');
@@ -71,12 +70,12 @@ describe('WHERE clause generation', function () {
       assert.equal(result.params[1], 'value1');
     });
 
-    it('should accommodate pre-built predicates with a different nested generator', function () {
+    it('should accommodate pre-built document predicates with isDocument', function () {
       const result = where(source, {
         conditions: '"field2" @@ lower($1)',
         params: ['value2'],
         where: {field1: 'value1'},
-        nestedGenerator: 'docGenerator'
+        isDocument: true
       });
 
       assert.equal(result.conditions, '"field2" @@ lower($1) AND "body" @> $2');
@@ -98,7 +97,7 @@ describe('WHERE clause generation', function () {
       const result = where(source, {
         field: [{one: 'two', three: 'four'}],
         'otherthing >': 123
-      }, 0, 'docGenerator');
+      }, 0, true);
 
       assert.equal(result.conditions, `"body" @> $1 AND ("body"->>'otherthing')::decimal > 123`);
       assert.lengthOf(result.params, 1);
