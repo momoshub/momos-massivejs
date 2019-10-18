@@ -61,7 +61,7 @@
     "chai-as-promised": "7.1.1",
     "coveralls": "3.0.7",
     "eslint": "6.5.1",
-    "mocha": "6.2.1",
+    "mocha": "6.2.2",
     "nyc": "14.1.1",
     "standard-version": "7.0.0"
   },
