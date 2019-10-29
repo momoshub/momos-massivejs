@@ -139,6 +139,7 @@
         "allowTemplateLiterals": true
       }
     ],
+    "require-atomic-updates": "off",
     "require-jsdoc": [
       "warn",
       {
