@@ -54,7 +54,7 @@
     "lodash": "4.17.15",
     "murmurhash": "0.0.2",
     "pg-promise": "9.3.3",
-    "pg-query-stream": "2.0.0"
+    "pg-query-stream": "2.0.1"
   },
   "devDependencies": {
     "chai": "4.2.0",
