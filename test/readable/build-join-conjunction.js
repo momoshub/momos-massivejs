@@ -6,7 +6,7 @@ describe('join', function () {
   const source = new Writable({
     name: 'mytable',
     schema: 'public',
-    columns: ['id', 'field', 'col1', 'col2', 'body'],
+    columns: ['id', 'field', 'col1', 'col2', 'body', 'x', 'y', 'z'],
     pk: ['id'],
     db: {
       currentSchema: 'public',
@@ -14,7 +14,7 @@ describe('join', function () {
       jointable1: new Writable({
         name: 'jointable1',
         schema: 'public',
-        columns: ['id', 'mytable_id', 'val1'],
+        columns: ['id', 'mytable_id', 'val1', 'a', 'b', 'c'],
         pk: ['id'],
         db: {currentSchema: 'public'}
       }),
@@ -46,9 +46,11 @@ describe('join', function () {
       jointable1: {
         on: {mytable_id: 'id'}
       }
-    }).buildJoinConjunction({mytable_id: 'id'}, 'jointable1');
+    }).solveEtCoagula({mytable_id: 'id'}, 'jointable1');
 
-    assert.equal(conjunction, '("jointable1"."mytable_id" = "mytable"."id")');
+    assert.equal(conjunction.predicates, '("jointable1"."mytable_id" = "mytable"."id")');
+    assert.lengthOf(conjunction.params, 0);
+    assert.equal(conjunction.offset, 0);
   });
 
   it('creates complex criteria', function () {
@@ -57,29 +59,31 @@ describe('join', function () {
         on: {
           mytable_id: 'id',
           or: [{
-            one: 'two'
+            a: 'x'
           }, {
-            three: 'four',
-            five: 'six'
+            b: 'y',
+            c: 'z'
           }]
         }
       }
-    }).buildJoinConjunction({
+    }).solveEtCoagula({
       mytable_id: 'id',
       or: [{
-        one: 'two'
+        a: 'x'
       }, {
-        three: 'four',
-        five: 'six'
+        b: 'y',
+        c: 'z'
       }]
     }, 'jointable1');
 
-    assert.deepEqual(conjunction, [
-      '(("jointable1"."mytable_id" = "mytable"."id") AND ',
-      '(("jointable1"."one" = "mytable"."two") OR ',
-      '(("jointable1"."three" = "mytable"."four") AND ',
-      '("jointable1"."five" = "mytable"."six"))))'
+    assert.equal(conjunction.predicates, [
+      '("jointable1"."mytable_id" = "mytable"."id" AND ',
+      '(("jointable1"."a" = "mytable"."x") OR ',
+      '("jointable1"."b" = "mytable"."y" AND ',
+      '"jointable1"."c" = "mytable"."z")))'
     ].join(''));
+    assert.lengthOf(conjunction.params, 0);
+    assert.equal(conjunction.offset, 0);
   });
 
   it('uses supplied aliases', function () {
@@ -88,9 +92,11 @@ describe('join', function () {
         relation: 'myschema.jointable3',
         on: {mytable_id: 'id'}
       }
-    }).buildJoinConjunction({mytable_id: 'id'}, 'jt3');
+    }).solveEtCoagula({mytable_id: 'id'}, 'jt3');
 
-    assert.equal(conjunction, '("jt3"."mytable_id" = "mytable"."id")');
+    assert.equal(conjunction.predicates, '("jt3"."mytable_id" = "mytable"."id")');
+    assert.lengthOf(conjunction.params, 0);
+    assert.equal(conjunction.offset, 0);
   });
 
   it('ignores schemas in favor of aliases', function () {
@@ -98,9 +104,11 @@ describe('join', function () {
       'myschema.jointable3': {
         on: {mytable_id: 'id'}
       }
-    }).buildJoinConjunction({mytable_id: 'id'}, 'jointable3');
+    }).solveEtCoagula({mytable_id: 'id'}, 'jointable3');
 
-    assert.equal(conjunction, '("jointable3"."mytable_id" = "mytable"."id")');
+    assert.equal(conjunction.predicates, '("jointable3"."mytable_id" = "mytable"."id")');
+    assert.lengthOf(conjunction.params, 0);
+    assert.equal(conjunction.offset, 0);
   });
 
   it('routes join keys to the appropriate relations', function () {
@@ -111,8 +119,10 @@ describe('join', function () {
       'jointable2': {
         on: {jointable1_id: 'jointable1.id'}
       }
-    }).buildJoinConjunction({jointable1_id: 'jointable1.id'}, 'jointable2');
+    }).solveEtCoagula({jointable1_id: 'jointable1.id'}, 'jointable2');
 
-    assert.equal(conjunction, '("jointable2"."jointable1_id" = "jointable1"."id")');
+    assert.equal(conjunction.predicates, '("jointable2"."jointable1_id" = "jointable1"."id")');
+    assert.lengthOf(conjunction.params, 0);
+    assert.equal(conjunction.offset, 0);
   });
 });

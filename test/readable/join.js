@@ -146,6 +146,210 @@ describe('join', function () {
     });
   });
 
+  describe('constants in join conditions', function () {
+    it('joins on constants', function () {
+      return db.beta.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            val: 'alpha one'
+          }
+        }
+      }).find({
+        val: 'alpha three again'
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 4,
+          alpha_id: 3,
+          val: 'alpha three again',
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('joins on multiple constants', function () {
+      return db.beta.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            id: 1,
+            val: 'alpha one'
+          }
+        }
+      }).find({
+        val: 'alpha three again'
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 4,
+          alpha_id: 3,
+          val: 'alpha three again',
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('joins on constants for multiple relations', function () {
+      return db.beta.join({
+        alpha: {
+          type: 'INNER',
+          on: {
+            val: 'one'
+          }
+        },
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            id: 1,
+            val: 'alpha one'
+          }
+        }
+      }).find({
+        val: 'alpha three again'
+      }).then(result => {
+        assert.deepEqual(result, [{
+          id: 4,
+          alpha_id: 3,
+          j: null,
+          val: 'alpha three again',
+          alpha: [{
+            id: 1,
+            val: 'one'
+          }],
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('mixes keys and constants', function () {
+      return db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            alpha_id: 'id',
+            val: 'alpha one'
+          }
+        }
+      }).find({}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1,
+          val: 'one',
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('mixes dot-pathed keys and constants', function () {
+      return db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            alpha_id: 'alpha.id',
+            val: 'alpha one'
+          }
+        }
+      }).find({}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1,
+          val: 'one',
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('handles simple operations', function () {
+      return db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            'alpha_id is': null
+          }
+        }
+      }).find({val: 'one'}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1,
+          val: 'one',
+          epsilon: [{
+            id: 2,
+            alpha_id: null,
+            val: 'not two'
+          }]
+        }]);
+      });
+    });
+
+    it('handles operations with mutators', function () {
+      return db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            'alpha_id': [1, 2]
+          }
+        }
+      }).find({val: 'one'}).then(result => {
+        assert.deepEqual(result, [{
+          id: 1,
+          val: 'one',
+          epsilon: [{
+            id: 1,
+            alpha_id: 1,
+            val: 'alpha one'
+          }]
+        }]);
+      });
+    });
+
+    it('catches constants that start with valid keys', async function () {
+      await db.sch.epsilon.insert({
+        alpha_id: 3,
+        val: 'alpha.id but literally the text alpha.id'
+      });
+
+      const result = await db.alpha.join({
+        'sch.epsilon': {
+          type: 'INNER',
+          on: {
+            alpha_id: 'alpha.id',
+            val: 'alpha.id but literally the text alpha.id'
+          }
+        }
+      }).find({});
+
+      await db.sch.epsilon.destroy({
+        val: 'alpha.id but literally the text alpha.id'
+      });
+
+      assert.deepEqual(result, [{
+        id: 3,
+        val: 'three',
+        epsilon: [{
+          alpha_id: 3,
+          id: 3,
+          val: 'alpha.id but literally the text alpha.id'
+        }]
+      }]);
+    });
+  });
+
   it('changes join types', function () {
     return db.alpha.join({
       beta: {
