@@ -32,6 +32,10 @@ describe('findOne', function () {
       const res = await db.orders.findOne(order.id);
       assert.equal(res.id, order.id);
     });
+
+    it('rejects findOne-by-pk attempts on a table without a pk', function () {
+      assert.throws(() => db.destinations.findOne(1), '"destinations" doesn\'t have a primary key.');
+    });
   });
 
   describe('no records', function () {

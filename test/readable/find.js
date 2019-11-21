@@ -526,7 +526,7 @@ describe('find', function () {
     });
 
     it('rejects if you try to search by pk', function () {
-      return db.popular_products.find(1).then(() => { assert.fail(); }).catch(() => {});
+      assert.throws(() => db.popular_products.find(1), '"popular_products" doesn\'t have a primary key.');
     });
   });
 

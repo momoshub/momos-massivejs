@@ -1,5 +1,6 @@
 'use strict';
 
+const Readable = require('../../lib/readable');
 const Writable = require('../../lib/writable');
 const Statement = require('../../lib/statement/statement');
 
@@ -28,6 +29,16 @@ describe('Statement', function () {
     });
   });
 
+  describe('isPkSearch', function () {
+    it('should accept simple document criteria', function () {
+      assert.isTrue(new Statement(source).isPkSearch({id: 1}));
+    });
+
+    it('should accept complex document criteria', function () {
+      assert.isTrue(new Statement(source).isPkSearch({'id >=': 1}));
+    });
+  });
+
   describe('setCriteria', function () {
     it('sets criteria and params', function () {
       const statement = new Statement(source);
@@ -39,7 +50,6 @@ describe('Statement', function () {
 
       assert.equal(statement.conditions, '"one" = $1');
       assert.deepEqual(statement.params, ['two']);
-      assert.isFalse(statement.isPkSearch);
     });
 
     it('prepends initial params', function () {
@@ -52,7 +62,6 @@ describe('Statement', function () {
 
       assert.equal(statement.conditions, '"one" = $2');
       assert.deepEqual(statement.params, ['three', 'two']);
-      assert.isFalse(statement.isPkSearch);
     });
 
     it('detects primitive pk searches', function () {
@@ -65,7 +74,21 @@ describe('Statement', function () {
 
       assert.equal(statement.conditions, '"id" = $1');
       assert.deepEqual(statement.params, [1]);
-      assert.isTrue(statement.isPkSearch);
+    });
+
+    it('throws if a primitive pk search on an entity without pk', function () {
+      const view = new Readable({
+        name: 'testsource',
+        schema: 'public',
+        columns: ['id', 'field1', 'field2', 'string', 'boolean', 'int', 'number', 'object', 'array', 'emptyArray'],
+        db: {
+          currentSchema: 'public'
+        }
+      });
+
+      assert.throws(() => {
+        new Statement(view).setCriteria(1);
+      }, '"testsource" doesn\'t have a primary key.');
     });
   });
 });

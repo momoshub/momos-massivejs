@@ -2,7 +2,7 @@ CREATE SCHEMA public;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE products(
+CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   price DECIMAL(10,2) DEFAULT 0.00 NOT NULL,
@@ -13,13 +13,17 @@ CREATE TABLE products(
   tags CHARACTER VARYING(255)[]
 );
 
-CREATE TABLE orders(
+CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id INT,
   user_id INT,
   notes CHARACTER VARYING(255),
   shipped BOOLEAN NOT NULL DEFAULT FALSE,
   ordered_at DATE DEFAULT now() NOT NULL
+);
+
+CREATE TABLE destinations (
+  name TEXT
 );
 
 INSERT INTO products(name, price, description, specs, tags, in_stock)
