@@ -30,12 +30,17 @@ describe('Statement', function () {
   });
 
   describe('isPkSearch', function () {
-    it('should accept simple document criteria', function () {
+    it('should accept simple criteria', function () {
       assert.isTrue(new Statement(source).isPkSearch({id: 1}));
     });
 
-    it('should accept complex document criteria', function () {
+    it('should accept complex criteria', function () {
       assert.isTrue(new Statement(source).isPkSearch({'id >=': 1}));
+    });
+
+    it('catches columns with similar names', function () {
+      assert.isFalse(new Statement(source).isPkSearch({identifier: 1}));
+      assert.isFalse(new Statement(source).isPkSearch({id_entifier: 1}));
     });
   });
 
