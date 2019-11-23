@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.2](https://gitlab.com/dmfay/massive-js/compare/v6.1.1...v6.1.2) (2019-11-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v4.0.1 ([c66d786](https://gitlab.com/dmfay/massive-js/commit/c66d78637ee667a3718fead469585c208825318f))
+* **deps:** update dependency pg-promise to v10 ([6a6d265](https://gitlab.com/dmfay/massive-js/commit/6a6d265847c7f985d4daed1506844a3aa7fafb0f))
+* get pk constraint info from pg_constraint instead of the information schema (fixes [#702](https://gitlab.com/dmfay/massive-js/issues/702)) ([98561f2](https://gitlab.com/dmfay/massive-js/commit/98561f25267c6ecaf4a737462a79918b48d83a51))
+* improve pk column recognition in isPkSearch ([cacc514](https://gitlab.com/dmfay/massive-js/commit/cacc51403fa6f6675ed4fcdd1cb203eb47b978c2))
+* throw on attempted primary key searches of relations without primary keys (fixes [#703](https://gitlab.com/dmfay/massive-js/issues/703)) ([40c1a8b](https://gitlab.com/dmfay/massive-js/commit/40c1a8b0910a9d92a317214add528aa7617f554d))
+* **deps:** update dependency commander to v4 ([87fc6a7](https://gitlab.com/dmfay/massive-js/commit/87fc6a7700f4d2f2b14a4562790b14bad4967041))
+* **deps:** update dependency glob to v7.1.5 ([f4ba198](https://gitlab.com/dmfay/massive-js/commit/f4ba19868c6a49d676a325aa44f3394ed28ab83e))
+* **deps:** update dependency glob to v7.1.6 ([5f35c27](https://gitlab.com/dmfay/massive-js/commit/5f35c27b97727a3247b5639f5e2a40273b2dd473))
+* **deps:** update dependency pg-promise to v9.3.6 ([27888e6](https://gitlab.com/dmfay/massive-js/commit/27888e6272081e00b32cc9c8b671ce692215a373))
+* **deps:** update dependency pg-query-stream to v2.0.1 ([144cdf7](https://gitlab.com/dmfay/massive-js/commit/144cdf7077a018b6d8963f65418e571d5c38d99b))
+* throw QueryFile errors ([64355f1](https://gitlab.com/dmfay/massive-js/commit/64355f131fd9d5b386c51f46eb0a267dc7f28e81))
+
 ### [6.1.1](https://gitlab.com/dmfay/massive-js/compare/v6.1.0...v6.1.1) (2019-10-06)
 
 
