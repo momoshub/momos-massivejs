@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.3](https://gitlab.com/dmfay/massive-js/compare/v6.1.2...v6.1.3) (2019-12-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency pg-promise to v10.3.1 ([e86f923](https://gitlab.com/dmfay/massive-js/commit/e86f923cc74631b67897d1c5f9456033c758095e))
+* give db clones a clean entityCache ([0f15e61](https://gitlab.com/dmfay/massive-js/commit/0f15e6191117dd55a9141bdf94024f2e9bb90334))
+
 ### [6.1.2](https://gitlab.com/dmfay/massive-js/compare/v6.1.1...v6.1.2) (2019-11-23)
 
 
