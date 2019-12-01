@@ -379,6 +379,29 @@ describe('join', function () {
     });
   });
 
+  it('works in tasks or transactions', function () {
+    return db.withConnection(task => {
+      return task.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {alpha_id: 'id'}
+        }
+      }).find({
+        'alpha.id': 3
+      });
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 3,
+        val: 'three',
+        beta: [{
+          id: 3, alpha_id: 3, val: 'alpha three'
+        }, {
+          id: 4, alpha_id: 3, val: 'alpha three again'
+        }]
+      }]);
+    });
+  });
+
   it('errors when the origin name reappears', function () {
     assert.throws(() => db.alpha.join({
       alpha: {
