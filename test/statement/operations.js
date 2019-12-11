@@ -64,6 +64,34 @@ describe('operation mutators', function () {
       assert.equal(condition.value, '($1,$2,$3)');
     });
 
+    it('builds an IN list for an empty array', function () {
+      const condition = ops.buildIn({
+        appended: ops('='),
+        offset: 1,
+        value: [],
+        params: []
+      });
+
+      assert.equal(condition.appended.operator, '=');
+      assert.equal(condition.offset, 1);
+      assert.deepEqual(condition.params, []);
+      assert.equal(condition.value, `ANY ('{}')`);
+    });
+
+    it('builds an NOT IN list for an empty array', function () {
+      const condition = ops.buildIn({
+        appended: ops('<>'),
+        offset: 1,
+        value: [],
+        params: []
+      });
+
+      assert.equal(condition.appended.operator, '<>');
+      assert.equal(condition.offset, 1);
+      assert.deepEqual(condition.params, []);
+      assert.equal(condition.value, `ALL ('{}')`);
+    });
+
     it('typecasts timestamps', function () {
       const date1 = new Date();
       const date2 = new Date();

@@ -82,6 +82,14 @@ describe('find', function () {
       return db.products.find({'id <>': [1, 2]}).then(res => assert.equal(res[0].id, 3));
     });
 
+    it('returns no product for IN []', function () {
+      return db.products.find({id: []}).then(res => assert.equal(res.length, 0));
+    });
+
+    it('returns all products for NOT IN []', function () {
+      return db.products.find({'id <>': []}).then(res => assert.equal(res.length, 4));
+    });
+
     it('returns products by finding a null field', function () {
       return db.products.find({'tags': null}).then(res => {
         assert.lengthOf(res, 1);
