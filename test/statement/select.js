@@ -51,8 +51,7 @@ describe('Select', function () {
       assert.isUndefined(query.offset);
       assert.isUndefined(query.limit);
       assert.isUndefined(query.pageLength);
-      assert.isFalse(query.forUpdate);
-      assert.isFalse(query.forShare);
+      assert.isUndefined(query.lock);
       assert.lengthOf(query.params, 0);
       assert.isFalse(query.build);
       assert.isFalse(query.document);
@@ -350,6 +349,36 @@ describe('Select', function () {
       it('adds FOR SHARE', function () {
         const result = new Select(source, {}, {forShare: true});
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR SHARE');
+      });
+
+      it('parses explicit lock option FOR UPDATE', function () {
+        const result = new Select(source, {}, {lock: {strength: 'UPDATE'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR UPDATE');
+      });
+
+      it('parses explicit lock option FOR SHARE', function () {
+        const result = new Select(source, {}, {lock: {strength: 'SHARE'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR SHARE');
+      });
+
+      it('parses explicit lock option FOR NO KEY UPDATE', function () {
+        const result = new Select(source, {}, {lock: {strength: 'NO KEY UPDATE'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR NO KEY UPDATE');
+      });
+
+      it('parses explicit lock option FOR KEY SHARE', function () {
+        const result = new Select(source, {}, {lock: {strength: 'KEY SHARE'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR KEY SHARE');
+      });
+
+      it('parses explicit lock option NOWAIT', function () {
+        const result = new Select(source, {}, {lock: {strength: 'UPDATE', lockedRows: 'NOWAIT'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR UPDATE NOWAIT');
+      });
+
+      it('parses explicit lock option SKIP LOCKED', function () {
+        const result = new Select(source, {}, {lock: {strength: 'UPDATE', lockedRows: 'SKIP LOCKED'}});
+        assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE FOR UPDATE SKIP LOCKED');
       });
 
       it('applies limits with a FOR', function () {

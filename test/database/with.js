@@ -158,7 +158,9 @@ describe('transactions', function () {
 
           return tx.products.findOne({id: record.id}, {
             order: [{field: 'string', direction: 'desc'}],
-            forUpdate: true
+            lock: {
+              strength: 'UPDATE'
+            }
           });
         });
 
