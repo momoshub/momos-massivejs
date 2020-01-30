@@ -453,6 +453,25 @@ describe('join', function () {
     }), 'Missing explicit pk in join definition for alpha_zeta.');
   });
 
+  it('restricts the resultset with aliased exprs', function () {
+    return db.alpha.join({
+      beta: {
+        type: 'INNER',
+        on: {alpha_id: 'id'}
+      }
+    }).find({'alpha.id': 3}, {
+      exprs: {
+        'alpha__id': 'alpha.id',
+        'beta__id': 'beta.id'
+      }
+    }).then(result => {
+      assert.deepEqual(result, [{
+        id: 3,
+        beta: [{id: 3}, {id: 4}]
+      }]);
+    });
+  });
+
   describe('aliasing', function () {
     it('defers to an explicit relation but aliases to the key', function () {
       return db.alpha.join({
