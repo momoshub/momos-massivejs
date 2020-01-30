@@ -58,6 +58,19 @@ describe('decompose', function () {
     assert.deepEqual(data, [{id: 1, val: 'p1', children: [{id: 11, val: 'c1'}]}]);
   });
 
+  it('decomposes partial results', function () {
+    const data = decompose({
+      pk: 'parent_id',
+      columns: {parent_id: 'id', parent_val: 'val'},
+      children: {
+        pk: 'children_id',
+        columns: ['children_id', 'children_val']
+      }
+    }, {parent_id: 1, children_id: 11});
+
+    assert.deepEqual(data, [{id: 1, children: [{children_id: 11}]}]);
+  });
+
   it('should handle array fields', function () {
     const data = decompose({
       pk: 'parent_id',
