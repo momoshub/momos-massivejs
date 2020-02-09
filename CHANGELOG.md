@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://gitlab.com/dmfay/massive-js/compare/v6.1.4...v6.2.0) (2020-02-09)
+
+
+### Features
+
+* support all explicit locking options for SELECT ([c19b17c](https://gitlab.com/dmfay/massive-js/commit/c19b17ce5c01fc58acabdc01196a5796c5420332))
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v4.1.0 ([c7c3520](https://gitlab.com/dmfay/massive-js/commit/c7c352096751af110a0c0170a6ddb7ec354d5ee3))
+* **deps:** update dependency commander to v4.1.1 ([64d22d2](https://gitlab.com/dmfay/massive-js/commit/64d22d2393832266845c620383ff623b5ae73df0))
+* **deps:** update dependency pg-promise to v10.3.2 ([b5d2d9e](https://gitlab.com/dmfay/massive-js/commit/b5d2d9ed2a563b9dd2fe54ca3eb671877b2d85cf))
+* **deps:** update dependency pg-promise to v10.4.3 ([81b3d39](https://gitlab.com/dmfay/massive-js/commit/81b3d39f17d3d3ffa9ed8799994588fff3d7acd4))
+* **deps:** update dependency pg-query-stream to v3 ([2064bdb](https://gitlab.com/dmfay/massive-js/commit/2064bdbf6150d75fc3b7788191e4f5ce176ff1af))
+* decomposing a resultset missing a schema-defined field will not include explicit undefineds ([ee34d87](https://gitlab.com/dmfay/massive-js/commit/ee34d876f472ba1cd353909240261fa6ceede6e0))
+* **deps:** update dependency pg-query-stream to v2.1.2 ([5a970a8](https://gitlab.com/dmfay/massive-js/commit/5a970a8b715667732e63c4964674988bbd292c86))
+
 ### [6.1.4](https://gitlab.com/dmfay/massive-js/compare/v6.1.3...v6.1.4) (2019-12-11)
 
 
