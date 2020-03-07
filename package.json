@@ -68,5 +68,9 @@
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/dmfay/massive-js"
+  },
+  "mocha": {
+    "recursive": true,
+    "require": "test/helpers"
   }
 }
