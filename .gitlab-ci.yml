@@ -5,6 +5,7 @@ variables:
   POSTGRES_DB: massive
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ""
+  POSTGRES_HOST_AUTH_METHOD: trust
 
 services:
   - postgres:latest
