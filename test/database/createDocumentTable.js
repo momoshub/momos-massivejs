@@ -24,6 +24,7 @@ describe('createDocumentTable', function () {
       return db.createDocumentTable(tableName).then(() => {
         assert.isOk(db[tableName]);
         assert.instanceOf(db[tableName], Writable);
+        assert.include(db.listTables(), tableName);
       });
     });
   });
