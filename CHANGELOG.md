@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://gitlab.com/dmfay/massive-js/compare/v6.2.0...v6.3.0) (2020-04-11)
+
+
+### Features
+
+* flexible onConflict option for insert ([d7b4deb](https://gitlab.com/dmfay/massive-js/commit/d7b4deb18093c82310856dfe9d8f4c15c84e2012)), closes [#709](https://gitlab.com/dmfay/massive-js/issues/709)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v5 ([638acba](https://gitlab.com/dmfay/massive-js/commit/638acba8a2054f6a01819a4adb9441b79a1f9a8d))
+* **deps:** update dependency murmurhash to v1 ([e486959](https://gitlab.com/dmfay/massive-js/commit/e48695944e416937f76302784ed913ddf5ad09da))
+* **deps:** update dependency pg-promise to v10.4.4 ([cdee34f](https://gitlab.com/dmfay/massive-js/commit/cdee34fc89ebaf7681a8a9625fc5dd3a45b54148))
+* **deps:** update dependency pg-promise to v10.5.0 ([f6b927e](https://gitlab.com/dmfay/massive-js/commit/f6b927ef2e2e0b806421e9bc29879fbd8a063777))
+* **deps:** update dependency pg-query-stream to v3.0.3 ([2679895](https://gitlab.com/dmfay/massive-js/commit/26798954e3b11b0112c6da035302241a96c9ffa9))
+* **deps:** update dependency pg-query-stream to v3.0.6 ([5045850](https://gitlab.com/dmfay/massive-js/commit/50458502cd256fd40a8fa0091df490dcb5856d86))
+* createDocumentTable sets loader=tables on new relations for visibility in listTables ([8cf7c7e](https://gitlab.com/dmfay/massive-js/commit/8cf7c7ebeeef8023944194fb3ec307d0dcda805b))
+
 ## [6.2.0](https://gitlab.com/dmfay/massive-js/compare/v6.1.4...v6.2.0) (2020-02-09)
 
 
