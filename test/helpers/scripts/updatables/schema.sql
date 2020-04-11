@@ -43,3 +43,12 @@ INSERT INTO normal_pk (field1) VALUES ('alpha'), ('beta'), ('gamma');
 INSERT INTO compound_pk (field1) VALUES ('alpha'), ('beta'), ('gamma');
 INSERT INTO no_pk (field1, field2) VALUES ('alpha', 'beta'), ('gamma', 'delta'), ('epsilon', 'zeta');
 INSERT INTO "CasedName" ("Field1") VALUES ('Alpha'), ('Beta'), ('Gamma');
+
+CREATE TABLE things (
+  id SERIAL PRIMARY KEY,
+  stuff TEXT,
+  name TEXT
+);
+
+CREATE UNIQUE INDEX stuff_name_idx
+ON things (stuff, lower(name));

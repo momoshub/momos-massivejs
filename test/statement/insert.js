@@ -119,38 +119,73 @@ describe('Insert', function () {
       assert.deepEqual(result.params, ['value1']);
     });
 
-    it('should handle onConflictIgnore option', function () {
-      const result = new Insert(source, {field1: 'value1'}, {onConflictIgnore: true});
-      assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT DO NOTHING RETURNING *');
-      assert.deepEqual(result.params, ['value1']);
-    });
+    describe('onConflict', function () {
+      it('handles old onConflictIgnore', function () {
+        const result = new Insert(source, {field1: 'value1'}, {onConflictIgnore: true});
+        assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT DO NOTHING RETURNING *');
+        assert.deepEqual(result.params, ['value1']);
+      });
 
-    describe('onConflictUpdate', function () {
-      it('should handle onConflictUpdate option', function () {
+      it('handles old onConflictUpdate', function () {
         const result = new Insert(source, {field1: 'value1'}, {onConflictUpdate: ['id']});
         assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT ("id") DO UPDATE SET "field1" = EXCLUDED."field1" RETURNING *');
         assert.deepEqual(result.params, ['value1']);
       });
 
-      it('should handle onConflictUpdate option with multiple fields and conflict keys', function () {
+      it('throws if overspecified', function () {
+        assert.throws(() => new Insert(source, {field1: 'value1'}, {
+          onConflictIgnore: true,
+          onConflictUpdate: ['id'],
+          onConflict: {
+            target: ['id']
+          }
+        }).format(), 'The "onConflictIgnore", "onConflictUpdate", and "onConflict" options are mutually exclusive');
+      });
+
+      it('throws without an action', function () {
+        assert.throws(() => new Insert(source, {field1: 'value1'}, {
+          onConflict: {
+            target: ['id']
+          }
+        }).format(), 'onConflict must specify an action of ignore or update');
+      });
+
+      it('handles a basic onConflict update', function () {
+        const result = new Insert(source, {field1: 'value1'}, {
+          onConflict: {
+            action: 'update',
+            target: 'id'
+          }
+        });
+        assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT ("id") DO UPDATE SET "field1" = EXCLUDED."field1" RETURNING *');
+        assert.deepEqual(result.params, ['value1']);
+      });
+
+      it('handles onConflict update targeting multiple fields', function () {
         const result = new Insert(source, {
           field1: 'value1',
           object: 'value2'
         }, {
-          onConflictUpdate: ['id', 'field2']
+          onConflict: {
+            action: 'update',
+            target: ['id', 'field2']
+          }
         });
 
         assert.equal(result.format(), 'INSERT INTO "testsource" ("field1", "object") VALUES ($1, $2) ON CONFLICT ("id", "field2") DO UPDATE SET "field1" = EXCLUDED."field1", "object" = EXCLUDED."object" RETURNING *');
         assert.deepEqual(result.params, ['value1', 'value2']);
       });
 
-      it('should handle onConflictUpdate option with multiple fields and conflict keys and additional excluded fields', function () {
+      it('handles onConflict update with fields and exclusions', function () {
         const result = new Insert(source, {
           field1: 'value1',
           object: 'value2'
         }, {
-          onConflictUpdate: ['id', 'field2'],
-          onConflictUpdateExclude: ['object']
+          onConflict: {
+            action: 'update',
+            target: ['id', 'field2'],
+            exclude: ['object']
+          }
         });
 
         assert.equal(result.format(), 'INSERT INTO "testsource" ("field1", "object") VALUES ($1, $2) ON CONFLICT ("id", "field2") DO UPDATE SET "field1" = EXCLUDED."field1" RETURNING *');

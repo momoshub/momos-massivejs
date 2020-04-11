@@ -18,7 +18,7 @@ describe('tables', function () {
     const tables = await loader(db);
 
     assert.isArray(tables);
-    assert.lengthOf(tables, 5);
+    assert.lengthOf(tables, 6);
     assert.property(tables[0], 'schema');
     assert.property(tables[0], 'name');
     assert.property(tables[0], 'parent');

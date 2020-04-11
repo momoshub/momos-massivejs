@@ -175,7 +175,10 @@ describe('insert', function () {
       id: original.id,
       field1: 'eta'
     }, {
-      onConflictUpdate: ['id']
+      onConflict: {
+        target: ['id'],
+        action: 'update'
+      }
     });
 
     const afterCount = await db.normal_pk.count();
@@ -186,6 +189,24 @@ describe('insert', function () {
     const final = await db.normal_pk.findOne(original.id);
 
     assert.equal(final.field1, 'eta');
+  });
+
+  it('upserts with an expression', async () => {
+    const original = db.things.insert({
+      stuff: 'stuff',
+      name: 'thing'
+    });
+    const conflict = db.things.insert({
+      stuff: 'stuff',
+      name: 'Thing'
+    }, {
+      onConflict: {
+        targetExpr: 'stuff, lower(name)',
+        action: 'update'
+      }
+    });
+
+    assert.equal(conflict.id, original.id);
   });
 
   it('rejects if not insertable', async () => {
