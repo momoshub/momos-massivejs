@@ -49,19 +49,19 @@
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "commander": "5.0.0",
+    "commander": "5.1.0",
     "glob": "7.1.6",
     "lodash": "4.17.15",
     "murmurhash": "1.0.0",
-    "pg-promise": "10.5.0",
-    "pg-query-stream": "3.0.6"
+    "pg-promise": "10.5.2",
+    "pg-query-stream": "3.0.7"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
-    "coveralls": "3.0.11",
+    "coveralls": "3.1.0",
     "eslint": "6.8.0",
-    "mocha": "7.1.1",
+    "mocha": "7.1.2",
     "nyc": "15.0.1",
     "standard-version": "7.1.0"
   },
