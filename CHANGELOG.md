@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.3.1](https://gitlab.com/dmfay/massive-js/compare/v6.3.0...v6.3.1) (2020-05-04)
+
+
+### Bug Fixes
+
+* dependency update, especially pg-promise/pg for node v14 support ([6e47a30](https://gitlab.com/dmfay/massive-js/commit/6e47a30e5f96f6ce0f0146398fbb8976425f2117))
+
 ## [6.3.0](https://gitlab.com/dmfay/massive-js/compare/v6.2.0...v6.3.0) (2020-04-11)
 
 
