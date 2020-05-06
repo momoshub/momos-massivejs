@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://gitlab.com/dmfay/massive-js/compare/v6.3.1...v6.4.0) (2020-05-06)
+
+
+### Features
+
+* text search parsers ([d454d02](https://gitlab.com/dmfay/massive-js/commit/d454d02440170deb34453530454381bda82ed807))
+
 ### [6.3.1](https://gitlab.com/dmfay/massive-js/compare/v6.3.0...v6.3.1) (2020-05-04)
 
 
