@@ -136,17 +136,4 @@ describe('searchDoc', function () {
       assert.equal(docs[0].title, 'Document 2');
     });
   });
-
-  it('requires fields and term', function () {
-    let caught = false;
-
-    return db.docs.searchDoc({})
-      .then(() => assert.fail())
-      .catch(err => {
-        assert.equal(err.message, 'Need fields as an array and a term string');
-
-        caught = true;
-      })
-      .then(() => assert.isTrue(caught));
-  });
 });

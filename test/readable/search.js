@@ -89,13 +89,58 @@ describe('search', function () {
     });
   });
 
-  it('requires fields and term', function () {
+  describe('parsers', function () {
+    it('uses the plain parser', function () {
+      return db.products.search({
+        fields: ['description'],
+        term: '2 description',
+        parser: 'plain'
+      }).then(res => {
+        assert.lengthOf(res, 1);
+      });
+    });
+
+    it('uses the phrase parser', function () {
+      return db.products.search({
+        fields: ['description'],
+        term: '2 description',
+        parser: 'phrase'
+      }).then(res => {
+        assert.lengthOf(res, 1);
+      });
+    });
+
+    it('uses the websearch parser', function () {
+      return db.products.search({
+        fields: ['description'],
+        term: 'description -2',
+        parser: 'websearch'
+      }).then(res => {
+        assert.lengthOf(res, 3);
+      });
+    });
+  });
+
+  it('requires fields or tsv', function () {
     let caught = false;
 
     return db.products.search({})
       .then(() => assert.fail())
       .catch(err => {
-        assert.equal(err.message, 'Need fields as an array and a term string');
+        assert.equal(err.message, 'Plan must contain a fields array or tsv string');
+
+        caught = true;
+      })
+      .then(() => assert.isTrue(caught));
+  });
+
+  it('requires a term', function () {
+    let caught = false;
+
+    return db.products.search({fields: ['description']})
+      .then(() => assert.fail())
+      .catch(err => {
+        assert.equal(err.message, 'Plan must contain a term string');
 
         caught = true;
       })
