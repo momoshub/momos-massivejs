@@ -58,6 +58,8 @@ describe('connecting', function () {
       assert.isFunction(second.fn);
       assert.isAbove(first.listTables().length, second.listTables().length);
       assert.equal(second.listTables().length, 1);
+    } catch (e) {
+      assert.fail(e);
     } finally {
       await first.query('REVOKE SELECT ON t1 FROM multiball');
       await first.query('DROP USER multiball');
@@ -68,17 +70,31 @@ describe('connecting', function () {
   });
 
   it('connects twice in parallel', async function () {
+    const db = await massive({connectionString}, loader);
+
+    await db.query('CREATE USER multiball');
+    await db.query('GRANT SELECT ON t1 TO multiball');
+
+    await db.instance.$pool.end();
+
     let m1, m2;
 
     try {
       [m1, m2] = await Promise.all([
-        massive({database: 'postgres'}),
-        massive({database: 'massive'})
+        massive({connectionString}),
+        massive({
+          connectionString: `postgres://multiball@${global.host}/massive`
+        })
       ]);
 
       assert.isOk(m1.serverVersion);
       assert.isOk(m2.serverVersion);
+    } catch (e) {
+      assert.fail(e);
     } finally {
+      await m1.query('REVOKE SELECT ON t1 FROM multiball');
+      await m1.query('DROP USER multiball');
+
       m1.instance.$pool.end();
       m2.instance.$pool.end();
     }
