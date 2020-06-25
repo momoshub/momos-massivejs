@@ -67,6 +67,23 @@ describe('connecting', function () {
     }
   });
 
+  it('connects twice in parallel', async function () {
+    let m1, m2;
+
+    try {
+      [m1, m2] = await Promise.all([
+        massive({database: 'postgres'}),
+        massive({database: 'massive'})
+      ]);
+
+      assert.isOk(m1.serverVersion);
+      assert.isOk(m2.serverVersion);
+    } finally {
+      m1.instance.$pool.end();
+      m2.instance.$pool.end();
+    }
+  });
+
   it('accepts a receive event option on driver config', function () {
     // eslint-disable-next-line require-jsdoc
     function camelizeColumns (data) {
