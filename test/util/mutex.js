@@ -14,27 +14,30 @@ describe('Mutex', function () {
   });
 
   it('locks', function (done) {
-    const m = new Mutex(db.instance.$config.promise);
+    const mutex = new Mutex(db.instance.$config.promise);
     let released = false;
 
-    m.acquire().then(() => {
-      assert.isTrue(m.locked);
+    mutex.acquire().then(m => {
+      assert.equal(mutex, m);
+      assert.isTrue(mutex.locked);
 
-      m.acquire().then(() => {
-        assert.isTrue(m.locked);
+      mutex.acquire().then(m2 => {
+        assert.equal(mutex, m);
+        assert.equal(m, m2);
+        assert.isTrue(mutex.locked);
         assert.isTrue(released);
 
         done();
       });
 
       setTimeout(() => {
-        assert.isTrue(m.locked);
+        assert.isTrue(mutex.locked);
 
         released = true;
 
-        m.release();
+        mutex.release();
 
-        assert.isFalse(m.locked);
+        assert.isFalse(mutex.locked);
       }, 1000);
     });
   });
