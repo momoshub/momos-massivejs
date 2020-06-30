@@ -22,7 +22,7 @@ describe('Update', function () {
 
       assert.isFalse(query.only);
       assert.deepEqual(query.changes, []);
-      assert.equal(query.conditions, 'TRUE');
+      assert.equal(query.predicate, 'TRUE');
       assert.deepEqual(query.returning, ['*']);
       assert.lengthOf(query.params, 0);
       assert.isFalse(query.build);

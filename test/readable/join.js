@@ -899,7 +899,7 @@ describe('join', function () {
           '"beta"."alpha_id" AS "beta__alpha_id",',
           '"beta"."id" AS "beta__id","beta"."j" AS "beta__j","beta"."val" AS "beta__val" ',
           'FROM "alpha" ',
-          'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
+          'INNER JOIN "beta" ON "beta"."alpha_id" = "alpha"."id" ',
           'WHERE "alpha"."id" = $1 ',
           'ORDER BY "alpha"."val" DESC'
         ].join(''));
@@ -1014,7 +1014,7 @@ describe('join', function () {
           '"beta"."alpha_id" AS "beta__alpha_id",',
           '"beta"."id" AS "beta__id","beta"."j" AS "beta__j","beta"."val" AS "beta__val" ',
           'FROM "alpha" ',
-          'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
+          'INNER JOIN "beta" ON "beta"."alpha_id" = "alpha"."id" ',
           'WHERE "alpha"."id" = $1'
         ].join(''));
         assert.deepEqual(result.params, [3]);
@@ -1202,6 +1202,22 @@ describe('join', function () {
           id: 3,
           val: 'something else'
         }]);
+      });
+    });
+
+    it.skip('updates a compound readable with constant criteria', function () {
+      // TODO offset needs to be stored between join and where for this to work
+      return db.alpha.join({
+        beta: {
+          type: 'INNER',
+          on: {val: 'alpha one'}
+        }
+      }).update({
+        'beta.id': 1
+      }, {
+        val: 'something else'
+      }).then(result => {
+        assert.deepEqual(result, ['TODO']);
       });
     });
 

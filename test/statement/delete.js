@@ -19,7 +19,7 @@ describe('Delete', function () {
       const query = new Delete(source);
 
       assert.isFalse(query.only);
-      assert.equal(query.conditions, 'TRUE');
+      assert.equal(query.predicate, 'TRUE');
       assert.deepEqual(query.returning, ['*']);
       assert.lengthOf(query.params, 0);
       assert.isFalse(query.build);

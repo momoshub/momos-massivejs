@@ -46,7 +46,7 @@ describe('Select', function () {
 
       assert.isFalse(query.only);
       assert.deepEqual(query.selectList, ['*']);
-      assert.equal(query.conditions, 'TRUE');
+      assert.equal(query.predicate, 'TRUE');
       assert.lengthOf(query.order, 0);
       assert.isUndefined(query.offset);
       assert.isUndefined(query.limit);
@@ -69,14 +69,14 @@ describe('Select', function () {
     it('generates a WHERE with a defined table', function () {
       const query = new Select(source, {field: 'val'});
 
-      assert.equal(query.conditions, '"field" = $1');
+      assert.equal(query.predicate, '"field" = $1');
       assert.deepEqual(query.params, ['val']);
     });
 
     it('generates a WHERE with an implicit table', function () {
       const query = new Select(source, {field: 'val'});
 
-      assert.equal(query.conditions, '"field" = $1');
+      assert.equal(query.predicate, '"field" = $1');
       assert.deepEqual(query.params, ['val']);
     });
 
@@ -424,7 +424,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.equal(result.pagination, '("col1","col2") > ($1,$2)');
-        assert.equal(result.conditions, 'TRUE');
+        assert.equal(result.predicate, 'TRUE');
         assert.deepEqual(result.params, [123, 456]);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE AND ("col1","col2") > ($1,$2) ORDER BY "col1" ASC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -445,7 +445,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.equal(result.pagination, '("col1","col2") < ($1,$2)');
-        assert.equal(result.conditions, 'TRUE');
+        assert.equal(result.predicate, 'TRUE');
         assert.deepEqual(result.params, [123, 456]);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE AND ("col1","col2") < ($1,$2) ORDER BY "col1" DESC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -462,7 +462,7 @@ describe('Select', function () {
 
         assert.equal(result.pageLength, 10);
         assert.isUndefined(result.pagination);
-        assert.equal(result.conditions, 'TRUE');
+        assert.equal(result.predicate, 'TRUE');
         assert.deepEqual(result.params, []);
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE ORDER BY "col1" ASC,"col2" ASC FETCH FIRST 10 ROWS ONLY');
       });
@@ -479,7 +479,7 @@ describe('Select', function () {
           }]
         });
 
-        assert.equal(result.conditions, 'col2 = $1');
+        assert.equal(result.predicate, 'col2 = $1');
         assert.deepEqual(result.params, [1, 5]);
         assert.equal(result.pagination, '("col1") > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE col2 = $1 AND ("col1") > ($2) ORDER BY "col1" ASC FETCH FIRST 10 ROWS ONLY');
@@ -497,7 +497,7 @@ describe('Select', function () {
           }]
         });
 
-        assert.equal(result.conditions, '"col2" = $1');
+        assert.equal(result.predicate, '"col2" = $1');
         assert.deepEqual(result.params, ['value2', 5]);
         assert.equal(result.pagination, '(("col1")::int) > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE "col2" = $1 AND (("col1")::int) > ($2) ORDER BY ("col1")::int ASC FETCH FIRST 10 ROWS ONLY');
@@ -516,7 +516,7 @@ describe('Select', function () {
           }]
         });
 
-        assert.equal(result.conditions, '"body" @> $1');
+        assert.equal(result.predicate, '"body" @> $1');
         assert.deepEqual(result.params, [JSON.stringify({col2: 'value2'}), 5]);
         assert.equal(result.pagination, '(("col1")::int) > ($2)');
         assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE "body" @> $1 AND (("col1")::int) > ($2) ORDER BY ("col1")::int ASC FETCH FIRST 10 ROWS ONLY');
@@ -582,9 +582,9 @@ describe('Select', function () {
         '"jointable3"."mytable_id" AS "jointable3__mytable_id",',
         '"jointable3"."val3" AS "jointable3__val3" ',
         'FROM "mytable" ',
-        'INNER JOIN "jointable1" ON ("jointable1"."mytable_id" = "mytable"."id") ',
-        'INNER JOIN "jointable2" AS "jt2" ON ("jt2"."jointable1_id" = "jointable1"."id") ',
-        'LEFT OUTER JOIN "myschema"."jointable3" AS "jointable3" ON ("jointable3"."mytable_id" = "mytable"."id") ',
+        'INNER JOIN "jointable1" ON "jointable1"."mytable_id" = "mytable"."id" ',
+        'INNER JOIN "jointable2" AS "jt2" ON "jt2"."jointable1_id" = "jointable1"."id" ',
+        'LEFT OUTER JOIN "myschema"."jointable3" AS "jointable3" ON "jointable3"."mytable_id" = "mytable"."id" ',
         'WHERE TRUE'
       ].join(''));
     });

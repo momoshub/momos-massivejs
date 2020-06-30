@@ -48,36 +48,36 @@ describe('Statement', function () {
     it('sets criteria and params', function () {
       const statement = new Statement(source);
 
-      assert.isUndefined(statement.conditions);
+      assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
 
       statement.setCriteria({one: 'two'});
 
-      assert.equal(statement.conditions, '"one" = $1');
+      assert.equal(statement.predicate, '"one" = $1');
       assert.deepEqual(statement.params, ['two']);
     });
 
     it('prepends initial params', function () {
       const statement = new Statement(source);
 
-      assert.isUndefined(statement.conditions);
+      assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
 
       statement.setCriteria({one: 'two'}, ['three']);
 
-      assert.equal(statement.conditions, '"one" = $2');
+      assert.equal(statement.predicate, '"one" = $2');
       assert.deepEqual(statement.params, ['three', 'two']);
     });
 
     it('detects primitive pk searches', function () {
       const statement = new Statement(source);
 
-      assert.isUndefined(statement.conditions);
+      assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
 
       statement.setCriteria({id: 1});
 
-      assert.equal(statement.conditions, '"id" = $1');
+      assert.equal(statement.predicate, '"id" = $1');
       assert.deepEqual(statement.params, [1]);
     });
 
