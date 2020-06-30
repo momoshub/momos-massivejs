@@ -24,9 +24,9 @@ describe('join', function () {
         id: 3,
         val: 'three',
         beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }]);
     });
@@ -46,9 +46,9 @@ describe('join', function () {
         id: 3,
         val: 'three',
         beta_view: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }]);
     });
@@ -66,10 +66,10 @@ describe('join', function () {
       'alpha.id': 3
     }).then(result => {
       assert.deepEqual(result, [{
-        id: 3, alpha_id: 3, val: 'alpha three',
+        id: 3, alpha_id: 3, val: 'alpha three', j: null,
         alpha: [{id: 3, val: 'three'}]
       }, {
-        id: 4, alpha_id: 3, val: 'alpha three again',
+        id: 4, alpha_id: 3, val: 'alpha three again', j: null,
         alpha: [{id: 3, val: 'three'}]
       }]);
     });
@@ -112,9 +112,9 @@ describe('join', function () {
       assert.deepEqual(result, [{
         id: 1, val: 'one',
         beta: [{
-          id: 1, alpha_id: 1, val: 'alpha one',
+          id: 1, alpha_id: 1, val: 'alpha one', j: null,
           gamma: [{
-            id: 1, beta_id: 1, alpha_id_one: 1, alpha_id_two: 1,
+            id: 1, beta_id: 1, alpha_id_one: 1, alpha_id_two: 1, j: null,
             val: 'alpha one alpha one beta one'
           }],
           delta: [{
@@ -136,6 +136,7 @@ describe('join', function () {
       assert.deepEqual(result, [{
         id: 1,
         alpha_id: 1,
+        j: null,
         val: 'alpha one',
         epsilon: [{
           id: 1,
@@ -161,6 +162,7 @@ describe('join', function () {
         assert.deepEqual(result, [{
           id: 4,
           alpha_id: 3,
+          j: null,
           val: 'alpha three again',
           epsilon: [{
             id: 1,
@@ -186,6 +188,7 @@ describe('join', function () {
         assert.deepEqual(result, [{
           id: 4,
           alpha_id: 3,
+          j: null,
           val: 'alpha three again',
           epsilon: [{
             id: 1,
@@ -348,6 +351,28 @@ describe('join', function () {
         }]
       }]);
     });
+
+    it('does json', function () {
+      return db.beta.join({
+        gamma: {
+          type: 'INNER',
+          on: {
+            'j.z.a': 'j.x.y'
+          }
+        }
+      }).find({val: 'not five'}).then(result => {
+        assert.deepEqual(result, [{
+          id: 6,
+          alpha_id: null,
+          val: 'not five',
+          j: {x: {y: 'test'}},
+          gamma: [{
+            id: 6, alpha_id_one: 4, alpha_id_two: null, beta_id: 5,
+            val: 'beta five', j: {z: {a: 'test'}}
+          }]
+        }]);
+      });
+    });
   });
 
   it('changes join types', function () {
@@ -360,12 +385,12 @@ describe('join', function () {
       'alpha.id >': 1
     }).then(result => {
       assert.deepEqual(result, [{
-        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+        id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, j: null, val: 'alpha two'}]
       }, {
         id: 3, val: 'three', beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }, {
         id: 4, val: 'four', beta: []
@@ -385,14 +410,14 @@ describe('join', function () {
       assert.deepEqual(result, [{
         id: 2, val: 'two',
         beta: [{
-          id: 2, alpha_id: 2, val: 'alpha two'
+          id: 2, alpha_id: 2, j: null, val: 'alpha two'
         }]
       }, {
         id: 3, val: 'three',
         beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }]);
     });
@@ -414,27 +439,27 @@ describe('join', function () {
       assert.deepEqual(result, [{
         id: 2, val: 'two',
         beta: [{
-          id: 2, alpha_id: 2, val: 'alpha two',
+          id: 2, alpha_id: 2, j: null, val: 'alpha two',
           gamma: [{
-            id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2,
+            id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2, j: null,
             val: 'alpha two alpha two beta two'
           }, {
-            id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3,
+            id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3, j: null,
             val: 'alpha two alpha three beta two again'
           }]
         }]
       }, {
         id: 3, val: 'three',
         beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three',
+          id: 3, alpha_id: 3, j: null, val: 'alpha three',
           gamma: [{
-            id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null,
+            id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null, j: null,
             val: 'alpha two (alpha null) beta three'
           }]
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again',
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again',
           gamma: [{
-            id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1,
+            id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1, j: null,
             val: 'alpha three alpha one beta four'
           }]
         }]
@@ -545,9 +570,9 @@ describe('join', function () {
         id: 3,
         val: 'three',
         beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }]);
     });
@@ -598,9 +623,9 @@ describe('join', function () {
         id: 3,
         val: 'three',
         beta: [{
-          id: 3, alpha_id: 3, val: 'alpha three'
+          id: 3, alpha_id: 3, j: null, val: 'alpha three'
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again'
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again'
         }]
       }]);
     });
@@ -691,9 +716,9 @@ describe('join', function () {
           id: 3,
           val: 'three',
           asdf: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -735,6 +760,7 @@ describe('join', function () {
           beta_id: 4,
           alpha_id_one: 3,
           alpha_id_two: 1,
+          j: null,
           val: 'alpha three alpha one beta four',
           alpha1: [{id: 3, val: 'three'}],
           alpha2: [{id: 1, val: 'one'}]
@@ -790,12 +816,12 @@ describe('join', function () {
         'alpha.id >': 1
       }).then(result => {
         assert.deepEqual(result, [{
-          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, j: null, val: 'alpha two'}]
         }, {
           id: 3, val: 'three', beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -808,12 +834,12 @@ describe('join', function () {
         'alpha.id >': 1
       }).then(result => {
         assert.deepEqual(result, [{
-          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, j: null, val: 'alpha two'}]
         }, {
           id: 3, val: 'three', beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -824,12 +850,12 @@ describe('join', function () {
         'alpha.id >': 1
       }).then(result => {
         assert.deepEqual(result, [{
-          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, val: 'alpha two'}]
+          id: 2, val: 'two', beta: [{id: 2, alpha_id: 2, j: null, val: 'alpha two'}]
         }, {
           id: 3, val: 'three', beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -847,9 +873,9 @@ describe('join', function () {
         assert.deepEqual(result, [{
           id: 3, val: 'three',
           beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -871,7 +897,7 @@ describe('join', function () {
           'SELECT "alpha"."id" AS "alpha__id",',
           '"alpha"."val" AS "alpha__val",',
           '"beta"."alpha_id" AS "beta__alpha_id",',
-          '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
+          '"beta"."id" AS "beta__id","beta"."j" AS "beta__j","beta"."val" AS "beta__val" ',
           'FROM "alpha" ',
           'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
           'WHERE "alpha"."id" = $1 ',
@@ -893,9 +919,9 @@ describe('join', function () {
           id: 3,
           val: 'three',
           beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -908,17 +934,11 @@ describe('join', function () {
         'alpha.id': 3
       }).then(result => {
         assert.deepEqual(result, [{
-          id: 3, alpha_id: 3, val: 'alpha three',
-          alpha: [{
-            id: 3,
-            val: 'three'
-          }]
+          id: 3, alpha_id: 3, j: null, val: 'alpha three',
+          alpha: [{id: 3, val: 'three'}]
         }, {
-          id: 4, alpha_id: 3, val: 'alpha three again',
-          alpha: [{
-            id: 3,
-            val: 'three'
-          }]
+          id: 4, alpha_id: 3, j: null, val: 'alpha three again',
+          alpha: [{id: 3, val: 'three'}]
         }]);
       });
     });
@@ -937,27 +957,27 @@ describe('join', function () {
         assert.deepEqual(result, [{
           id: 2, val: 'two',
           beta: [{
-            id: 2, alpha_id: 2, val: 'alpha two',
+            id: 2, alpha_id: 2, j: null, val: 'alpha two',
             gamma: [{
-              id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2,
+              id: 2, beta_id: 2, alpha_id_one: 1, alpha_id_two: 2, j: null,
               val: 'alpha two alpha two beta two'
             }, {
-              id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3,
+              id: 3, beta_id: 2, alpha_id_one: 2, alpha_id_two: 3, j: null,
               val: 'alpha two alpha three beta two again'
             }]
           }]
         }, {
           id: 3, val: 'three',
           beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three',
+            id: 3, alpha_id: 3, j: null, val: 'alpha three',
             gamma: [{
-              id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null,
+              id: 4, beta_id: 3, alpha_id_one: 2, alpha_id_two: null, j: null,
               val: 'alpha two (alpha null) beta three'
             }]
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again',
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again',
             gamma: [{
-              id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1,
+              id: 5, beta_id: 4, alpha_id_one: 3, alpha_id_two: 1, j: null,
               val: 'alpha three alpha one beta four'
             }]
           }]
@@ -992,7 +1012,7 @@ describe('join', function () {
           'SELECT "alpha"."id" AS "alpha__id",',
           '"alpha"."val" AS "alpha__val",',
           '"beta"."alpha_id" AS "beta__alpha_id",',
-          '"beta"."id" AS "beta__id","beta"."val" AS "beta__val" ',
+          '"beta"."id" AS "beta__id","beta"."j" AS "beta__j","beta"."val" AS "beta__val" ',
           'FROM "alpha" ',
           'INNER JOIN "beta" ON ("beta"."alpha_id" = "alpha"."id") ',
           'WHERE "alpha"."id" = $1'
@@ -1016,14 +1036,14 @@ describe('join', function () {
         assert.deepEqual(result, [{
           id: 3, val: 'three',
           beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }, {
           id: 2, val: 'two',
           beta: [{
-            id: 2, alpha_id: 2, val: 'alpha two'
+            id: 2, alpha_id: 2, j: null, val: 'alpha two'
           }]
         }]);
       });
@@ -1043,7 +1063,7 @@ describe('join', function () {
           id: 2,
           val: 'two',
           beta: {
-            id: 2, alpha_id: 2, val: 'alpha two'
+            id: 2, alpha_id: 2, j: null, val: 'alpha two'
           }
         }]);
       });
@@ -1065,9 +1085,9 @@ describe('join', function () {
           id: 3,
           val: 'three',
           beta: [{
-            id: 3, alpha_id: 3, val: 'alpha three'
+            id: 3, alpha_id: 3, j: null, val: 'alpha three'
           }, {
-            id: 4, alpha_id: 3, val: 'alpha three again'
+            id: 4, alpha_id: 3, j: null, val: 'alpha three again'
           }]
         }]);
       });
@@ -1128,8 +1148,9 @@ describe('join', function () {
         id: result.id,
         val: 'newer and improveder',
         beta: [{
-          id: 6,
+          id: 7,
           alpha_id: result.id,
+          j: null,
           val: 'asdf'
         }]
       }]);
@@ -1156,8 +1177,9 @@ describe('join', function () {
         id: result.id,
         val: 'newer and improveder',
         beta: [{
-          id: 7,
+          id: 8,
           alpha_id: result.id,
+          j: null,
           val: 'asdf'
         }]
       }]);
@@ -1274,12 +1296,14 @@ describe('join', function () {
           alpha_id_one: 2,
           alpha_id_two: null,
           beta_id: 3,
+          j: null,
           val: 'alpha two (alpha null) beta three'
         }, {
           id: 5,
           alpha_id_one: 3,
           alpha_id_two: 1,
           beta_id: 4,
+          j: null,
           val: 'alpha three alpha one beta four'
         }]);
       });
