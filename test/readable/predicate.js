@@ -3,9 +3,6 @@
 const Writable = require('../../lib/writable');
 
 describe('predicate', function () {
-  // TODO bring over more tests from test/statement/where as part of breaking
-  // out documentGenerator
-
   const source = new Writable({
     name: 'mytable',
     schema: 'public',
@@ -166,5 +163,264 @@ describe('predicate', function () {
     assert.equal(conjunction.predicates, '"jointable2"."jointable1_id" = "jointable1"."id"');
     assert.lengthOf(conjunction.params, 0);
     assert.equal(conjunction.offset, 0);
+  });
+
+  it('should return a safe value for fully-empty criteria', function () {
+    const result = source.predicate({}, 0, source.forWhere);
+    assert.equal(result.predicate, 'TRUE');
+    assert.equal(result.params.length, 0);
+  });
+
+  it('should return a safe value for empty table criteria', function () {
+    const result = source.predicate({}, 0);
+    assert.equal(result.predicate, 'TRUE');
+    assert.equal(result.params.length, 0);
+  });
+
+  it('should create basic criteria', function () {
+    const result = source.predicate({field: 'value'}, 0, source.forWhere);
+    assert.equal(result.predicate, '"field" = $1');
+    assert.equal(result.params.length, 1);
+    assert.equal(result.params[0], 'value');
+  });
+
+  it.skip('tests against columns', function () {
+    // TODO sourceKey.path isn't always fully qualified
+    const result = source.predicate({'col1 >': 'col2'}, 0, source.forWhere);
+    assert.equal(result.predicate, '"col1" > "col2"');
+    assert.equal(result.params.length, 0);
+  });
+
+  it('should AND together predicates', function () {
+    const result = source.predicate({field1: 'value1', field2: 'value2'}, 0, source.forWhere);
+    assert.equal(result.predicate, '"field1" = $1 AND "field2" = $2');
+    assert.equal(result.params.length, 2);
+    assert.equal(result.params[0], 'value1');
+    assert.equal(result.params[1], 'value2');
+  });
+
+  it('should accommodate pre-built predicates', function () {
+    const result = source.predicate({
+      conditions: '"field2" @@ lower($1)',
+      params: ['value2'],
+      where: {field1: 'value1'}
+    }, 0, source.forWhere);
+
+    assert.equal(result.predicate, '"field2" @@ lower($1) AND "field1" = $2');
+    assert.equal(result.params.length, 2);
+    assert.equal(result.params[0], 'value2');
+    assert.equal(result.params[1], 'value1');
+  });
+
+  it('should accommodate pre-built document predicates with isDocument', function () {
+    const result = source.predicate({
+      conditions: '"field2" @@ lower($1)',
+      params: ['value2'],
+      where: {field1: 'value1'},
+      isDocument: true
+    }, 0, source.forWhere);
+
+    assert.equal(result.predicate, '"field2" @@ lower($1) AND "body" @> $2');
+    assert.equal(result.params.length, 2);
+    assert.equal(result.params[0], 'value2');
+    assert.equal(result.params[1], JSON.stringify({field1: 'value1'}));
+  });
+
+  it('should return predicate and parameters', function () {
+    const result = source.predicate({field1: 'value1', field2: 'value2'}, 0, source.forWhere);
+
+    assert.equal(result.predicate, '"field1" = $1 AND "field2" = $2');
+    assert.equal(result.params.length, 2);
+    assert.equal(result.params[0], 'value1');
+    assert.equal(result.params[1], 'value2');
+  });
+
+  it('should keep non-contains stuff separate in document queries', function () {
+    const result = source.predicate({
+      field: [{one: 'two', three: 'four'}],
+      'otherthing >': 123
+    }, 0, source.forDoc);
+
+    assert.equal(result.predicate, `"body" @> $1 AND ("body"->>'otherthing')::decimal > 123`);
+    assert.lengthOf(result.params, 1);
+    assert.equal(result.params[0], '{"field":[{"one":"two","three":"four"}]}');
+  });
+
+  describe('JSON value formatting', function () {
+    it('should stringify numbers', function () {
+      const result = source.predicate({'json.field': 123}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '"json"->>\'field\' = $1');
+      assert.lengthOf(result.params, 1);
+      assert.equal(result.params[0], '123');
+      assert.typeOf(result.params[0], 'string');
+    });
+
+    it('should stringify booleans', function () {
+      const result = source.predicate({'json.field': true}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '"json"->>\'field\' = $1');
+      assert.lengthOf(result.params, 1);
+      assert.equal(result.params[0], 'true');
+      assert.typeOf(result.params[0], 'string');
+    });
+
+    it('should stringify dates', function () {
+      const date = new Date();
+      const result = source.predicate({'json.field': date}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '"json"->>\'field\' = $1');
+      assert.lengthOf(result.params, 1);
+      assert.equal(result.params[0], date.toString());
+      assert.typeOf(result.params[0], 'string');
+    });
+
+    it('should stringify individual items in arrays', function () {
+      const result = source.predicate({'json.field': [1, 2, 3]}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '"json"->>\'field\' IN ($1,$2,$3)');
+      assert.lengthOf(result.params, 3);
+      assert.deepEqual(result.params, ['1', '2', '3']);
+      assert.typeOf(result.params[0], 'string');
+    });
+
+    it('should not stringify nulls', function () {
+      const result = source.predicate({'json.field': null}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '"json"->>\'field\' IS null');
+      assert.lengthOf(result.params, 0);
+    });
+  });
+
+  describe('with disjunction subgroups', function () {
+    it('should encapsulate and OR together subgroups', function () {
+      const result = source.predicate({
+        or: [{
+          field1: 'value1'
+        }, {
+          field2: 'value2', field3: 'value3'
+        }, {
+          field4: 'value4'
+        }]
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1) OR ("field2" = $2 AND "field3" = $3) OR ("field4" = $4))');
+      assert.equal(result.params.length, 4);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value2');
+      assert.equal(result.params[2], 'value3');
+      assert.equal(result.params[3], 'value4');
+    });
+
+    it('should not pollute other fields', function () {
+      const result = source.predicate({
+        or: [{field1: 'value1'}, {field2: 'value2'}],
+        field3: 'value3'
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1) OR ("field2" = $2)) AND "field3" = $3');
+      assert.equal(result.params.length, 3);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value2');
+      assert.equal(result.params[2], 'value3');
+    });
+
+    it('should return a usable predicate if only given one subgroup', function () {
+      const result = source.predicate({or: [{field1: 'value1'}]}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1))');
+      assert.equal(result.params.length, 1);
+      assert.equal(result.params[0], 'value1');
+    });
+
+    it('recurses', function () {
+      const result = source.predicate({
+        or: [{
+          field1: 'value1',
+          or: [{
+            field2: 'value4'
+          }, {
+            field3: 'value5'
+          }]
+        }, {
+          field2: 'value2',
+          field3: 'value3'
+        }]
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1 AND (("field2" = $2) OR ("field3" = $3))) OR ("field2" = $4 AND "field3" = $5))');
+      assert.equal(result.params.length, 5);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value4');
+      assert.equal(result.params[2], 'value5');
+      assert.equal(result.params[3], 'value2');
+      assert.equal(result.params[4], 'value3');
+    });
+  });
+
+  describe('with nested conjunction subgroups', function () {
+    it('should encapsulate and AND together subgroups', function () {
+      const result = source.predicate({
+        and: [{
+          field1: 'value1'
+        }, {
+          field2: 'value2', field3: 'value3'
+        }, {
+          field4: 'value4'
+        }]
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1) AND ("field2" = $2 AND "field3" = $3) AND ("field4" = $4))');
+      assert.equal(result.params.length, 4);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value2');
+      assert.equal(result.params[2], 'value3');
+      assert.equal(result.params[3], 'value4');
+    });
+
+    it('should not pollute other fields', function () {
+      const result = source.predicate({
+        and: [{field1: 'value1'}, {field2: 'value2'}],
+        field3: 'value3'
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1) AND ("field2" = $2)) AND "field3" = $3');
+      assert.equal(result.params.length, 3);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value2');
+      assert.equal(result.params[2], 'value3');
+    });
+
+    it('should return a usable predicate if only given one subgroup', function () {
+      const result = source.predicate({and: [{field1: 'value1'}]}, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1))');
+      assert.equal(result.params.length, 1);
+      assert.equal(result.params[0], 'value1');
+    });
+
+    it('recurses', function () {
+      const result = source.predicate({
+        or: [{
+          field1: 'value1',
+          and: [{
+            field2: 'value4'
+          }, {
+            field3: 'value5'
+          }]
+        }, {
+          field2: 'value2',
+          field3: 'value3'
+        }]
+      }, 0, source.forWhere);
+
+      assert.equal(result.predicate, '(("field1" = $1 AND (("field2" = $2) AND ("field3" = $3))) OR ("field2" = $4 AND "field3" = $5))');
+      assert.equal(result.params.length, 5);
+      assert.equal(result.params[0], 'value1');
+      assert.equal(result.params[1], 'value4');
+      assert.equal(result.params[2], 'value5');
+      assert.equal(result.params[3], 'value2');
+      assert.equal(result.params[4], 'value3');
+    });
   });
 });
