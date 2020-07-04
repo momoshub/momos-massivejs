@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://gitlab.com/dmfay/massive-js/compare/v6.4.1...v6.5.0) (2020-07-04)
+
+
+### Features
+
+* join conditions can test constant as well as column values ([db84674](https://gitlab.com/dmfay/massive-js/commit/db846747e18e2b3200e46e86b601ad647f39e674)), closes [#718](https://gitlab.com/dmfay/massive-js/issues/718)
+* join json fields ([f0d1da5](https://gitlab.com/dmfay/massive-js/commit/f0d1da513955cc6aa0cd022d9abf417a5c2086f3)), closes [#713](https://gitlab.com/dmfay/massive-js/issues/713)
+
 ### [6.4.1](https://gitlab.com/dmfay/massive-js/compare/v6.4.0...v6.4.1) (2020-06-25)
 
 
