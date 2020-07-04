@@ -398,6 +398,25 @@ describe('join', function () {
     });
   });
 
+  it('joins on TRUE', function () {
+    return db.alpha.join({
+      epsilon: {
+        relation: 'sch.epsilon',
+        type: 'INNER',
+        on: {}
+      }
+    }).find(1).then(result => {
+      assert.deepEqual(result, [{
+        id: 1, val: 'one',
+        epsilon: [{
+          id: 1, alpha_id: 1, val: 'alpha one'
+        }, {
+          id: 2, alpha_id: null, val: 'not two'
+        }]
+      }]);
+    });
+  });
+
   it('decomposes multiple records', function () {
     return db.alpha.join({
       beta: {
