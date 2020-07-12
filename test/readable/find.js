@@ -462,7 +462,7 @@ describe('find', function () {
     });
 
     it('throws when field array is empty', function () {
-      assert.throws(() => db.Users.find({}, {fields: []}), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
+      assert.throws(() => db.Users.find({}, {fields: []}), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
     });
 
     it('returns a subset of fields, when we delimit in the calling code', function () {

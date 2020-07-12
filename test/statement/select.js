@@ -157,9 +157,9 @@ describe('Select', function () {
     it('errors if nothing is explicitly passed', function () {
       const query = new Select(source);
 
-      assert.throws(() => query.buildSelectList(null, {}), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
-      assert.throws(() => query.buildSelectList([], null), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
-      assert.throws(() => query.buildSelectList([], {}), 'At least one of fields or exprs must be supplied and must define a field or expression to select.');
+      assert.throws(() => query.buildSelectList(null, {}), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
+      assert.throws(() => query.buildSelectList([], null), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
+      assert.throws(() => query.buildSelectList([], {}), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
     });
 
     it('should quote fields', function () {
