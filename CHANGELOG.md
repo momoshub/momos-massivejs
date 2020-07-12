@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.0](https://gitlab.com/dmfay/massive-js/compare/v6.5.0...v6.6.0) (2020-07-12)
+
+
+### Features
+
+* options.fields takes a map of aliases to names, and *: true to automatically include unaliased columns ([957f756](https://gitlab.com/dmfay/massive-js/commit/957f7566c06ac99bbf7851de8c97b15389a4aa12)), closes [#706](https://gitlab.com/dmfay/massive-js/issues/706)
+
+
+### Bug Fixes
+
+* **deps:** update dependency lodash to v4.17.19 ([f71c2d1](https://gitlab.com/dmfay/massive-js/commit/f71c2d16353f67baa58f8ec33d38e43a17ab2a0b))
+* **deps:** update dependency pg-promise to v10.5.8 ([c959b1e](https://gitlab.com/dmfay/massive-js/commit/c959b1e55a508799f5af8b1a96779b3c4a677f02))
+* **deps:** update pg-query-stream to 3.2.0 ([5b1b70f](https://gitlab.com/dmfay/massive-js/commit/5b1b70ff69ba3213bb0c30d88fd9c8023b2f7aa3))
+
 ## [6.5.0](https://gitlab.com/dmfay/massive-js/compare/v6.4.1...v6.5.0) (2020-07-04)
 
 
