@@ -202,6 +202,40 @@ describe('Select', function () {
       ]);
     });
 
+    it('aliases fields', function () {
+      const query = new Select(source, {});
+      const list = query.buildSelectList({
+        one_aliased: 'one',
+        two_aliased: 'two',
+        json_aliased: 'field.array[0].element'
+      });
+
+      assert.deepEqual(list, [
+        '"one" AS "one_aliased"',
+        '"two" AS "two_aliased"',
+        '"field"#>>\'{array,0,element}\' AS "json_aliased"'
+      ]);
+    });
+
+    it('aliases fields with star', function () {
+      const query = new Select(source, {});
+      const list = query.buildSelectList({
+        '*': true,
+        one_aliased: 'col1',
+        two_aliased: 'col2',
+        json_aliased: 'field.array[0].element'
+      });
+
+      assert.sameMembers(list, [
+        '"id"',
+        '"col1" AS "one_aliased"',
+        '"col2" AS "two_aliased"',
+        '"field"',
+        '"field"#>>\'{array,0,element}\' AS "json_aliased"',
+        '"body"'
+      ]);
+    });
+
     it('should add expressions', function () {
       const query = new Select(source);
       const list = query.buildSelectList([], {
@@ -225,6 +259,26 @@ describe('Select', function () {
       assert.deepEqual(list, [
         '"col1"',
         '"col2"',
+        'col1 + col2 AS "colsum"',
+        'col1 - col2 AS "coldiff"'
+      ]);
+    });
+
+    it('should add aliased fields and expressions', function () {
+      const query = new Select(source);
+      const list = query.buildSelectList({
+        one_aliased: 'one',
+        two_aliased: 'two',
+        json_aliased: 'field.array[0].element'
+      }, {
+        colsum: 'col1 + col2',
+        coldiff: 'col1 - col2'
+      });
+
+      assert.deepEqual(list, [
+        '"one" AS "one_aliased"',
+        '"two" AS "two_aliased"',
+        '"field"#>>\'{array,0,element}\' AS "json_aliased"',
         'col1 + col2 AS "colsum"',
         'col1 - col2 AS "coldiff"'
       ]);

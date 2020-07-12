@@ -17,7 +17,7 @@ describe('Statement', function () {
 
   describe('ctor', function () {
     it('should have defaults', function () {
-      const query = new Statement(source);
+      const query = new Statement(source, {});
 
       assert.isFalse(query.only);
       assert.deepEqual(query.returning, ['*']);
@@ -27,26 +27,32 @@ describe('Statement', function () {
       assert.isFalse(query.single);
       assert.isFalse(query.stream);
     });
+
+    it('sets returning fields', function () {
+      const query = new Statement(source, {fields: ['field1', 'field2']}, true);
+
+      assert.sameMembers(query.returning, ['"field1"', '"field2"']);
+    });
   });
 
   describe('isPkSearch', function () {
     it('should accept simple criteria', function () {
-      assert.isTrue(new Statement(source).isPkSearch({id: 1}));
+      assert.isTrue(new Statement(source, {}).isPkSearch({id: 1}));
     });
 
     it('should accept complex criteria', function () {
-      assert.isTrue(new Statement(source).isPkSearch({'id >=': 1}));
+      assert.isTrue(new Statement(source, {}).isPkSearch({'id >=': 1}));
     });
 
     it('catches columns with similar names', function () {
-      assert.isFalse(new Statement(source).isPkSearch({identifier: 1}));
-      assert.isFalse(new Statement(source).isPkSearch({id_entifier: 1}));
+      assert.isFalse(new Statement(source, {}).isPkSearch({identifier: 1}));
+      assert.isFalse(new Statement(source, {}).isPkSearch({id_entifier: 1}));
     });
   });
 
   describe('setCriteria', function () {
     it('sets criteria and params', function () {
-      const statement = new Statement(source);
+      const statement = new Statement(source, {});
 
       assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
@@ -58,7 +64,7 @@ describe('Statement', function () {
     });
 
     it('prepends initial params', function () {
-      const statement = new Statement(source);
+      const statement = new Statement(source, {});
 
       assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
@@ -70,7 +76,7 @@ describe('Statement', function () {
     });
 
     it('detects primitive pk searches', function () {
-      const statement = new Statement(source);
+      const statement = new Statement(source, {});
 
       assert.isUndefined(statement.predicate);
       assert.isUndefined(statement.params);
@@ -92,7 +98,7 @@ describe('Statement', function () {
       });
 
       assert.throws(() => {
-        new Statement(view).setCriteria(1);
+        new Statement(view, {}).setCriteria(1);
       }, '"testsource" doesn\'t have a primary key.');
     });
   });

@@ -370,6 +370,14 @@ describe('find', function () {
       });
     });
 
+    it('restricts the select list to specified and aliased fields', function () {
+      return db.products.find({}, {fields: {my_id: 'id', my_name: 'name'}}).then(res => {
+        const keys = _.keys(res[0]);
+        assert.equal(keys.length, 2);
+        assert.sameMembers(keys, ['my_id', 'my_name']);
+      });
+    });
+
     it('applies fields and exprs', function () {
       return db.products.find({}, {fields: ['id'], exprs: {name: 'upper(name)'}}).then(res => {
         assert.equal(res[0].id, 1);
