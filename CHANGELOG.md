@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.6.1](https://gitlab.com/dmfay/massive-js/compare/v6.6.0...v6.6.1) (2020-10-19)
+
+
+### Bug Fixes
+
+* ensure the scripts directory is bundled ([0ec162b](https://gitlab.com/dmfay/massive-js/commit/0ec162b3fd02c6483547204b62ce3005e7ab056e))
+
 ## [6.6.0](https://gitlab.com/dmfay/massive-js/compare/v6.5.0...v6.6.0) (2020-07-12)
 
 
