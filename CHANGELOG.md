@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.6.2](https://gitlab.com/dmfay/massive-js/compare/v6.6.1...v6.6.2) (2020-12-13)
+
+
+### Bug Fixes
+
+* Update pg-promise ([3fa1c81](https://gitlab.com/dmfay/massive-js/commit/3fa1c8140a3db5d6882524cbdbaff05c1c59851f))
+
 ### [6.6.1](https://gitlab.com/dmfay/massive-js/compare/v6.6.0...v6.6.1) (2020-10-19)
 
 
