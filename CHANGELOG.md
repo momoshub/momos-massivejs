@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.6.3](https://gitlab.com/dmfay/massive-js/compare/v6.6.2...v6.6.3) (2021-01-23)
+
 ### [6.6.2](https://gitlab.com/dmfay/massive-js/compare/v6.6.1...v6.6.2) (2020-12-13)
 
 
