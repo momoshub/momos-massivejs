@@ -1368,52 +1368,11 @@ describe('join', function () {
   });
 
   describe('useless methods', function () {
-    /* eslint-disable no-console */
-    const _warn = console.warn;
-
-    after(function () {
-      console.warn = _warn;
-    });
-
-    it('warns on count', function () {
-      let warned = false;
-
-      console.warn = msg => {
-        assert.equal(msg, 'WARNING: counting a join relation will yield unexpected results.');
-        warned = true;
-      };
-
-      return db.alpha.join('beta')
-        .count()
-        .then(() => {
-          assert.isTrue(warned);
-        });
-    });
-
-    it('warns on limit', function () {
-      let warned = false;
-
-      console.warn = msg => {
-        assert.equal(msg, 'WARNING: setting LIMIT on join queries may truncate results and give the appearance of missing data.');
-        warned = true;
-      };
-
-      return db.alpha.join('beta')
-        .find({}, {
-          limit: 10
-        })
-        .then(() => {
-          assert.isTrue(warned);
-        });
-    });
-
     it('errors on findOne', function () {
       return db.alpha.join('beta')
         .findOne({})
         .then(() => assert.fail())
         .catch(err => assert.equal(err.message, 'findOne is not supported with compound Readables.'));
     });
-
-    /* eslint-enable no-console */
   });
 });
