@@ -1367,12 +1367,24 @@ describe('join', function () {
     });
   });
 
-  describe('useless methods', function () {
-    it('errors on findOne', function () {
+  describe('miscellany', function () {
+    it('returns a linear subtree from findOne', function () {
       return db.alpha.join('beta')
         .findOne({})
-        .then(() => assert.fail())
-        .catch(err => assert.equal(err.message, 'findOne is not supported with compound Readables.'));
+        .then(result => {
+          assert.deepEqual(result, {
+            id: 1,
+            val: 'one',
+            beta: [
+              {
+                alpha_id: 1,
+                id: 1,
+                j: null,
+                val: 'alpha one'
+              }
+            ]
+          });
+        });
     });
   });
 });
