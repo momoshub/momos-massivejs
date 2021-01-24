@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.6.4](https://gitlab.com/dmfay/massive-js/compare/v6.6.3...v6.6.4) (2021-01-24)
+
+
+### Bug Fixes
+
+* allow findOne on a compound readable ([0b5a12a](https://gitlab.com/dmfay/massive-js/commit/0b5a12a79f22ac92f456fccbb44b861dd48deedf))
+* revert "docs: warn about join limitations with count and limit" -- ([bbd5481](https://gitlab.com/dmfay/massive-js/commit/bbd5481d1891fb1f6c8ff135cd99fda53a29f136))
+
 ### [6.6.3](https://gitlab.com/dmfay/massive-js/compare/v6.6.2...v6.6.3) (2021-01-23)
 
 ### [6.6.2](https://gitlab.com/dmfay/massive-js/compare/v6.6.1...v6.6.2) (2020-12-13)
