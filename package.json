@@ -52,7 +52,7 @@
     "commander": "7.0.0",
     "glob": "7.1.6",
     "lodash": "4.17.20",
-    "murmurhash": "2.0.0",
+    "murmurhash": "1.0.0",
     "pg-promise": "^10.9.1",
     "pg-query-stream": "^4.0.0"
   },
