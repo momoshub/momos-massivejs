@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.6.5](https://gitlab.com/dmfay/massive-js/compare/v6.6.4...v6.6.5) (2021-01-28)
+
+
+### Bug Fixes
+
+* revert commander 7.0.0->6.1.0 causing repl issues in node 14+ ([c47f1ca](https://gitlab.com/dmfay/massive-js/commit/c47f1ca291c7d16e3f5ebfde2549006baeaacb9c))
+* revert node <11 compatibility break from murmurhash upgrade to 2.0.0 ([7a6a79b](https://gitlab.com/dmfay/massive-js/commit/7a6a79b030e17dda824035a5b9396c9e5330658e))
+* track pg-promise engine version ([4c9c89a](https://gitlab.com/dmfay/massive-js/commit/4c9c89a2a7deb13079c4449423ca2c66aa210c6a))
+
 ### [6.6.4](https://gitlab.com/dmfay/massive-js/compare/v6.6.3...v6.6.4) (2021-01-24)
 
 
