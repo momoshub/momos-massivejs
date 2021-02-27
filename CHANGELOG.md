@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.7.0](https://gitlab.com/dmfay/massive-js/compare/v6.6.5...v6.7.0) (2021-02-27)
+
+
+### Features
+
+* support json operations ?, ?|, ?&, @?, @@ in criteria objects ([2a01f65](https://gitlab.com/dmfay/massive-js/commit/2a01f65eebc2916cc333e808c62eb0af2a18a723))
+
 ### [6.6.5](https://gitlab.com/dmfay/massive-js/compare/v6.6.4...v6.6.5) (2021-01-28)
 
 
