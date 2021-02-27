@@ -219,39 +219,6 @@ describe('find', function () {
     });
   });
 
-  describe('JSON queries', function () {
-    it('finds a product matching the desired spec field in JSON', function () {
-      return db.products.findOne({'specs.weight': 30}).then(product => {
-        assert.equal(product.id, 3);
-        assert.equal(product.specs.weight, 30);
-      });
-    });
-    it('finds a product matching the desired spec index in JSON', function () {
-      return db.products.findOne({'specs[4]': 'array'}).then(product => {
-        assert.equal(product.id, 4);
-        assert.equal(product.specs[4], 'array');
-      });
-    });
-    it('finds a product matching the desired spec path in JSON', function () {
-      return db.products.findOne({'specs.dimensions.length': 15}).then(product => {
-        assert.equal(product.id, 2);
-        assert.equal(product.specs.dimensions.length, 15);
-      });
-    });
-    it('finds a product with a spec matching an IN list', function () {
-      return db.products.findOne({'specs.weight': [30, 35]}).then(product => {
-        assert.equal(product.id, 3);
-        assert.equal(product.specs.weight, 30);
-      });
-    });
-    it('mixes JSON and non-JSON predicates', function () {
-      return db.products.findOne({price: 35.00, 'specs.weight': 30}).then(product => {
-        assert.equal(product.id, 3);
-        assert.equal(product.specs.weight, 30);
-      });
-    });
-  });
-
   describe('array operations', function () {
     it('filters by array fields containing a value', function () {
       return db.products.find({'tags @>': ['tag2']}).then(res => {
@@ -302,6 +269,78 @@ describe('find', function () {
       return db.products.find({'tags @>': ['tag{brace}']}).then(res => {
         assert.lengthOf(res, 1);
         assert.equal(res[0].id, 4);
+      });
+    });
+  });
+
+  describe('JSON queries and operations', function () {
+    it('finds a product matching the desired spec field in JSON', function () {
+      return db.products.findOne({'specs.weight': 30}).then(product => {
+        assert.equal(product.id, 3);
+        assert.equal(product.specs.weight, 30);
+      });
+    });
+
+    it('finds a product matching the desired spec index in JSON', function () {
+      return db.products.findOne({'specs[4]': 'array'}).then(product => {
+        assert.equal(product.id, 4);
+        assert.equal(product.specs[4], 'array');
+      });
+    });
+
+    it('finds a product matching the desired spec path in JSON', function () {
+      return db.products.findOne({'specs.dimensions.length': 15}).then(product => {
+        assert.equal(product.id, 2);
+        assert.equal(product.specs.dimensions.length, 15);
+      });
+    });
+
+    it('finds a product with a spec matching an IN list', function () {
+      return db.products.findOne({'specs.weight': [30, 35]}).then(product => {
+        assert.equal(product.id, 3);
+        assert.equal(product.specs.weight, 30);
+      });
+    });
+
+    it('tests whether a key exists with ?', function () {
+      return db.products.findOne({'specs ?': 'dimensions'}).then(product => {
+        assert.equal(product.id, 2);
+        assert.deepEqual(product.specs.dimensions, {length: 15, width: 12});
+      });
+    });
+
+    it('tests whether any key exists with ?|', function () {
+      return db.products.find({'specs ?|': ['dimensions', 'sizes']}).then(products => {
+        assert.lengthOf(products, 2);
+        assert.sameMembers(products.map(p => p.id), [2, 3]);
+      });
+    });
+
+    it('tests whether all keys exist with ?&', function () {
+      return db.products.findOne({'specs ?|': ['dimensions', 'weight']}).then(product => {
+        assert.equal(product.id, 2);
+        assert.deepEqual(product.specs.dimensions, {length: 15, width: 12});
+      });
+    });
+
+    it('tests a jsonpath exists predicate', function () {
+      return db.products.findOne({'specs @?': '$.dimensions.width'}).then(product => {
+        assert.equal(product.id, 2);
+        assert.deepEqual(product.specs.dimensions, {length: 15, width: 12});
+      });
+    });
+
+    it('tests a jsonpath predicate', function () {
+      return db.products.findOne({'specs @@': '$.dimensions.width > 10'}).then(product => {
+        assert.equal(product.id, 2);
+        assert.deepEqual(product.specs.dimensions, {length: 15, width: 12});
+      });
+    });
+
+    it('mixes JSON and non-JSON predicates', function () {
+      return db.products.findOne({price: 35.00, 'specs.weight': 30}).then(product => {
+        assert.equal(product.id, 3);
+        assert.equal(product.specs.weight, 30);
       });
     });
   });
