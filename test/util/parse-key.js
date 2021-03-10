@@ -181,6 +181,14 @@ describe('parseKey', function () {
       assert.equal(result.lhs, '"field"::text');
       assert.isUndefined(result.appended);
     });
+
+    it('allows individual colons', function () {
+      const result = parseKey('still:gotta:quote:analogies', source, ops);
+      assert.equal(result.field, 'still:gotta:quote:analogies');
+      assert.equal(result.path, '"still:gotta:quote:analogies"');
+      assert.equal(result.lhs, '"still:gotta:quote:analogies"');
+      assert.isUndefined(result.appended);
+    });
   });
 
   describe('multi-table keys', function () {
