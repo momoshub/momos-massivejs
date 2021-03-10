@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.7.1](https://gitlab.com/dmfay/massive-js/compare/v6.7.0...v6.7.1) (2021-03-10)
+
+
+### Bug Fixes
+
+* restrict criteria value column matching to forJoin predicates, plus ([d88aa7b](https://gitlab.com/dmfay/massive-js/commit/d88aa7b3a621b0b1e84557c36d7cdd1cd585f199)), closes [#729](https://gitlab.com/dmfay/massive-js/issues/729)
+
 ## [6.7.0](https://gitlab.com/dmfay/massive-js/compare/v6.6.5...v6.7.0) (2021-02-27)
 
 
