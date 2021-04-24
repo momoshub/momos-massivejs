@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.8.0](https://gitlab.com/dmfay/massive-js/compare/v6.7.1...v6.8.0) (2021-04-24)
+
+
+### Features
+
+* privilege tables over columns in decomposition mapping ([68d8262](https://gitlab.com/dmfay/massive-js/commit/68d8262e6f890a84e1fbb4db27aea545943ff5d3)), closes [#732](https://gitlab.com/dmfay/massive-js/issues/732)
+
 ### [6.7.1](https://gitlab.com/dmfay/massive-js/compare/v6.7.0...v6.7.1) (2021-03-10)
 
 
