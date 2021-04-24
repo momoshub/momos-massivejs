@@ -317,6 +317,26 @@ describe('decompose', function () {
     assert.deepEqual(data, [{id: 1, val: 'p1', child: {id: 11, val: 'c1'}}]);
   });
 
+  it('lets entities overwrite columns', function () {
+    const data = decompose({
+      pk: 'children_id',
+      columns: {children_id: 'id', children_val: 'val', parent_id: 'parent'},
+      parent: {
+        pk: 'parent_id',
+        columns: {parent_id: 'id', parent_val: 'val'}
+      }
+    }, [
+      {parent_id: 'abc', parent_val: 'p1', children_id: 'def', children_val: 'c1'},
+      {parent_id: 'abc', parent_val: 'p1', children_id: 'ghi', children_val: 'c2'}
+    ]);
+
+    assert.deepEqual(data, [{
+      id: 'def', val: 'c1', parent: [{id: 'abc', val: 'p1'}]
+    }, {
+      id: 'ghi', val: 'c2', parent: [{id: 'abc', val: 'p1'}]
+    }]);
+  });
+
   it('decomposes to dictionaries', function () {
     const data = decompose({
       pk: 'parent_id',
