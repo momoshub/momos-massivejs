@@ -132,6 +132,14 @@ describe('find', function () {
         assert.equal(res[0].id, 1);
       });
     });
+
+    it('applies subcriteria with $or', function () {
+      return db.products.find({$or: [{'id <': 2}, {'id >=': 4}]}).then(res => assert.lengthOf(res, 2));
+    });
+
+    it('applies subcriteria with $and', function () {
+      return db.products.find({$and: [{'id <': 2}, {'id >=': 4}]}).then(res => assert.lengthOf(res, 0));
+    });
   });
 
   describe('pattern-matching queries', function () {
