@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.9.0](https://gitlab.com/dmfay/massive-js/compare/v6.8.0...v6.9.0) (2021-05-13)
+
+
+### Features
+
+* $set fields to raw SQL expressions in update ([64fab99](https://gitlab.com/dmfay/massive-js/commit/64fab99a9fd1eca1ab8e88700306d4bb3777a24e))
+* support $and and $or criteria keys ([211f11e](https://gitlab.com/dmfay/massive-js/commit/211f11e75f5903b74da2fbc7f362c3d6cc9ef4fd))
+
 ## [6.8.0](https://gitlab.com/dmfay/massive-js/compare/v6.7.1...v6.8.0) (2021-04-24)
 
 
