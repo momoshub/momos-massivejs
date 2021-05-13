@@ -97,5 +97,17 @@ describe('Update', function () {
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1 WHERE "field1" = $2 RETURNING "field1", "field2"');
       assert.deepEqual(result.params, ['value1', 'value2']);
     });
+
+    it('should build raw SQL', function () {
+      const result = new Update(source, {$set: {field1: '"field1" + 1'}});
+      assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = "field1" + 1 WHERE TRUE RETURNING *');
+    });
+
+    it('should not allow $set and the change field to alter the same column', function () {
+      assert.throws(
+        () => new Update(source, {field1: 'value', $set: {field1: '"field1" + 1'}}).format(),
+        'The key \'field1\' may not be defined in both the change map and the $set map.'
+      );
+    });
   });
 });
