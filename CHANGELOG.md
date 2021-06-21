@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.9.1](https://gitlab.com/dmfay/massive-js/compare/v6.9.0...v6.9.1) (2021-06-21)
+
+
+### Bug Fixes
+
+* avoid overriding options.single in join queries ([671b785](https://gitlab.com/dmfay/massive-js/commit/671b785cefc0ad4444447f22142602f34b852741)), closes [#735](https://gitlab.com/dmfay/massive-js/issues/735)
+
 ## [6.9.0](https://gitlab.com/dmfay/massive-js/compare/v6.8.0...v6.9.0) (2021-05-13)
 
 
