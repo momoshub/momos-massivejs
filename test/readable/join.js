@@ -1367,23 +1367,66 @@ describe('join', function () {
     });
   });
 
-  describe('miscellany', function () {
+  describe('find, findOne, and primary keys', function () {
     it('returns a linear subtree from findOne', function () {
       return db.alpha.join('beta')
-        .findOne({})
+        .findOne({id: 3})
         .then(result => {
           assert.deepEqual(result, {
-            id: 1,
-            val: 'one',
+            id: 3,
+            val: 'something else',
             beta: [
               {
-                alpha_id: 1,
-                id: 1,
+                alpha_id: 3,
+                id: 3,
                 j: null,
-                val: 'alpha one'
+                val: 'alpha three'
               }
             ]
           });
+        });
+    });
+
+    it('returns a linear subtree from findOne with a primitive pk', function () {
+      return db.alpha.join('beta')
+        .findOne(3)
+        .then(result => {
+          assert.deepEqual(result, {
+            id: 3,
+            val: 'something else',
+            beta: [
+              {
+                alpha_id: 3,
+                id: 3,
+                j: null,
+                val: 'alpha three'
+              }
+            ]
+          });
+        });
+    });
+
+    it('returns an array from find with a primitive pk', function () {
+      return db.alpha.join('beta')
+        .find(3)
+        .then(result => {
+          assert.deepEqual(result, [{
+            id: 3,
+            val: 'something else',
+            beta: [
+              {
+                alpha_id: 3,
+                id: 3,
+                j: null,
+                val: 'alpha three'
+              }, {
+                alpha_id: 3,
+                id: 4,
+                j: null,
+                val: 'alpha three again'
+              }
+            ]
+          }]);
         });
     });
   });
