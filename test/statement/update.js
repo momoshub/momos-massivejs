@@ -16,7 +16,7 @@ describe('Update', function () {
 
   describe('ctor', function () {
     it('should have defaults', function () {
-      const query = new Update(source);
+      const query = new Update(source, {}, {});
 
       assert.equal(query.source.delimitedFullName, '"testsource"');
 
@@ -55,19 +55,19 @@ describe('Update', function () {
 
   describe('format', function () {
     it('should return a basic update statement for the specified changes', function () {
-      const result = new Update(source, {field1: 'value1'});
+      const result = new Update(source, {field1: 'value1'}, {});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1 WHERE TRUE RETURNING *');
       assert.deepEqual(result.params, ['value1']);
     });
 
     it('should accommodate multiple changes', function () {
-      const result = new Update(source, {field1: 'value1', field2: 2});
+      const result = new Update(source, {field1: 'value1', field2: 2}, {});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1, "field2" = $2 WHERE TRUE RETURNING *');
       assert.deepEqual(result.params, ['value1', 2]);
     });
 
     it('should ignore nonexistent columns', function () {
-      const result = new Update(source, {not_a_field_1: 0, field1: 'value1', field2: 2, not_a_field_2: 3});
+      const result = new Update(source, {not_a_field_1: 0, field1: 'value1', field2: 2, not_a_field_2: 3}, {});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = $1, "field2" = $2 WHERE TRUE RETURNING *');
       assert.deepEqual(result.params, ['value1', 2]);
     });
@@ -99,7 +99,7 @@ describe('Update', function () {
     });
 
     it('should build raw SQL', function () {
-      const result = new Update(source, {$set: {field1: '"field1" + 1'}});
+      const result = new Update(source, {$set: {field1: '"field1" + 1'}}, {});
       assert.equal(result.format(), 'UPDATE "testsource" SET "field1" = "field1" + 1 WHERE TRUE RETURNING *');
     });
 

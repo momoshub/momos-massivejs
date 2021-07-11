@@ -42,7 +42,7 @@ describe('Select', function () {
 
   describe('ctor', function () {
     it('has defaults', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
 
       assert.isFalse(query.only);
       assert.deepEqual(query.selectList, ['*']);
@@ -149,13 +149,13 @@ describe('Select', function () {
 
   describe('buildSelectList', function () {
     it('fills in *', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
 
       assert.deepEqual(query.buildSelectList(), ['*']);
     });
 
     it('errors if nothing is explicitly passed', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
 
       assert.throws(() => query.buildSelectList(null, {}), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
       assert.throws(() => query.buildSelectList([], null), 'At least one of fields or exprs, if supplied, must define a field or expression to select.');
@@ -163,21 +163,21 @@ describe('Select', function () {
     });
 
     it('should quote fields', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList(['col1']);
 
       assert.deepEqual(list, ['"col1"']);
     });
 
     it('should quote multiple fields', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList(['col1', 'col2']);
 
       assert.deepEqual(list, ['"col1"', '"col2"']);
     });
 
     it('should parse JSON fields', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList([
         'field.element',
         'field.array[0]',
@@ -237,7 +237,7 @@ describe('Select', function () {
     });
 
     it('should add expressions', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList([], {
         colsum: 'col1 + col2',
         coldiff: 'col1 - col2'
@@ -250,7 +250,7 @@ describe('Select', function () {
     });
 
     it('should add fields and expressions', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList(['col1', 'col2'], {
         colsum: 'col1 + col2',
         coldiff: 'col1 - col2'
@@ -265,7 +265,7 @@ describe('Select', function () {
     });
 
     it('should add aliased fields and expressions', function () {
-      const query = new Select(source);
+      const query = new Select(source, {});
       const list = query.buildSelectList({
         one_aliased: 'one',
         two_aliased: 'two',
@@ -286,7 +286,7 @@ describe('Select', function () {
   });
 
   describe('buildOrderExpression', function () {
-    const query = new Select(source);
+    const query = new Select(source, {});
 
     it('throws if an expression is null or undefined', function () {
       assert.throws(() => query.buildOrderExpression(null));
@@ -337,7 +337,7 @@ describe('Select', function () {
 
   describe('format', function () {
     it('should return a basic select', function () {
-      const result = new Select(source);
+      const result = new Select(source, {});
       assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
     });
 
@@ -380,7 +380,7 @@ describe('Select', function () {
         }
       });
 
-      const result = new Select(readable);
+      const result = new Select(readable, {});
       assert.equal(result.format(), 'SELECT * FROM "mytable" WHERE TRUE');
     });
 

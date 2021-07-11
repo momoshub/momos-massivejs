@@ -75,6 +75,13 @@ describe('Statement', function () {
       assert.deepEqual(statement.params, ['three', 'two']);
     });
 
+    it('throws if criteria is null or undefined', function () {
+      const statement = new Statement(source, {});
+
+      assert.throws(() => statement.setCriteria(null));
+      assert.throws(() => statement.setCriteria(undefined));
+    });
+
     it('detects primitive pk searches', function () {
       const statement = new Statement(source, {});
 

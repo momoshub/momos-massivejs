@@ -16,7 +16,7 @@ describe('Delete', function () {
 
   describe('ctor', function () {
     it('should have defaults', function () {
-      const query = new Delete(source);
+      const query = new Delete(source, {});
 
       assert.isFalse(query.only);
       assert.equal(query.predicate, 'TRUE');
@@ -32,7 +32,7 @@ describe('Delete', function () {
 
   describe('format', function () {
     it('should return a basic delete statement for the specified criteria', function () {
-      const result = new Delete(source);
+      const result = new Delete(source, {});
       assert.equal(result.format(), 'DELETE FROM "testsource" WHERE TRUE RETURNING *');
     });
 
