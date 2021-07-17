@@ -51,6 +51,15 @@ describe('Statement', function () {
   });
 
   describe('setCriteria', function () {
+    it('resolves empty criteria to TRUE', function () {
+      const statement = new Statement(source, {});
+
+      statement.setCriteria({});
+
+      assert.equal(statement.predicate, 'TRUE');
+      assert.isEmpty(statement.params);
+    });
+
     it('sets criteria and params', function () {
       const statement = new Statement(source, {});
 
