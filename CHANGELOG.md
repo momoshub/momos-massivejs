@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.10.0](https://gitlab.com/dmfay/massive-js/compare/v6.9.1...v6.10.0) (2021-07-17)
+
+
+### Features
+
+* Do not allow a statement to have null or undefined criteria. ([936988a](https://gitlab.com/dmfay/massive-js/commit/936988a7c76756588b4a88ba8193007ae2a7388a))
+
 ### [6.9.1](https://gitlab.com/dmfay/massive-js/compare/v6.9.0...v6.9.1) (2021-06-21)
 
 
