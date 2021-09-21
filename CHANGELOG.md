@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.10.1](https://gitlab.com/dmfay/massive-js/compare/v6.10.0...v6.10.1) (2021-09-21)
+
+
+### Bug Fixes
+
+* improve performance for large IN queries ([ad7690b](https://gitlab.com/dmfay/massive-js/commit/ad7690bede046cac4fe796c207a92b345cc40f5f))
+
 ## [6.10.0](https://gitlab.com/dmfay/massive-js/compare/v6.9.1...v6.10.0) (2021-07-17)
 
 
