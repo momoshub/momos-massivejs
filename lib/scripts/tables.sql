@@ -10,6 +10,8 @@
 -- exceptions: array or comma-delimited string of LIKE conditions which
 --   override blacklisted tables.
 
+SET ENABLE_NESTLOOP TO FALSE;
+
 SELECT * FROM (
   WITH table_columns AS (
     SELECT attrelid, jsonb_object_agg(attname::text, atttypid::regtype) as types, array_agg(DISTINCT attname::text) AS columns
@@ -121,3 +123,5 @@ WHERE CASE
     replace((schema || '.'|| name), 'public.', '') LIKE ANY(string_to_array(replace($(exceptions), ' ', ''), ','))
   ELSE TRUE
 END;
+
+SET ENABLE_NESTLOOP TO TRUE;
