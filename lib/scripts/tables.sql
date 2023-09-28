@@ -9,6 +9,7 @@
 --   negatively to tables.
 -- exceptions: array or comma-delimited string of LIKE conditions which
 --   override blacklisted tables.
+-- test change
 
 SET ENABLE_NESTLOOP TO FALSE;
 
