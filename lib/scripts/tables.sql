@@ -10,7 +10,7 @@
 -- exceptions: array or comma-delimited string of LIKE conditions which
 --   override blacklisted tables.
 
-SET ENABLE_NESTLOOP TO FALSE;
+SET LOCAL enable_nestloop TO off;
 
 SELECT * FROM (
   WITH table_columns AS (
@@ -121,5 +121,3 @@ WHERE CASE
     replace((schema || '.'|| name), 'public.', '') LIKE ANY(string_to_array(replace($(exceptions), ' ', ''), ','))
   ELSE TRUE
 END;
-
-SET ENABLE_NESTLOOP TO TRUE;
